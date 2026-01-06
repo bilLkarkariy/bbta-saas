@@ -1,0 +1,192 @@
+// Lumelia SaaS - Database Schema
+// Multi-tenant WhatsApp Automation Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============ TENANTS ============
+
+model Tenant {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  businessType  String   // "salon", "restaurant", "ecommerce", "service"
+
+  // WhatsApp config
+  whatsappNumber String?
+  twilioSid      String?
+
+  // Business info
+  address       String?
+  city          String?
+  businessHours String?
+  services      String[] // Liste des services proposés
+  pricing       String?  // Grille tarifaire
+
+  // Subscription
+  plan          String   @default("starter") // starter, pro, enterprise
+  status        String   @default("trial")   // trial, active, suspended, cancelled
+  trialEndsAt   DateTime?
+  stripeCustomerId String?
+  stripeSubscriptionId String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  users         User[]
+  conversations Conversation[]
+  faqs          FAQ[]
+  aiUsage       AIUsage[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model User {
+  id         String   @id @default(cuid())
+  clerkId    String   @unique
+  email      String   @unique
+  name       String?
+  role       String   @default("member") // owner, admin, member
+
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([clerkId])
+}
+
+// ============ CONVERSATIONS ============
+
+model Conversation {
+  id              String   @id @default(cuid())
+  tenantId        String
+
+  // Customer info
+  customerPhone   String
+  customerName    String?
+  customerEmail   String?
+
+  // State
+  status          String   @default("active") // active, resolved, escalated, archived
+  lastMessageAt   DateTime @default(now())
+
+  // Current flow tracking (for multi-step interactions)
+  currentFlow     String?  // "booking", "lead_capture", null
+  currentStep     String?  // Current step in the flow
+  flowData        Json?    // { service: "coupe", date: "2026-01-10", time: "14h" }
+
+  // Lead info (captured during conversation)
+  leadScore       Int?     // 0-100
+  leadStatus      String?  // "new", "qualified", "converted", "lost"
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  messages        Message[]
+
+  @@unique([tenantId, customerPhone])
+  @@index([tenantId])
+  @@index([customerPhone])
+  @@index([status])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+
+  // Message content
+  direction      String   // "inbound", "outbound"
+  content        String
+  messageType    String   @default("text") // text, image, audio, template
+
+  // AI processing
+  intent         String?  // "FAQ", "BOOKING", "LEAD_CAPTURE", "ESCALATE", etc.
+  confidence     Float?   // 0-1
+  tierUsed       String?  // "TIER_1", "TIER_2", "TIER_3"
+  faqMatchId     String?  // ID of matched FAQ if any
+
+  // Twilio tracking
+  twilioSid      String?  @unique
+  status         String   @default("pending") // pending, sent, delivered, read, failed
+
+  // Tokens & cost
+  inputTokens    Int?
+  outputTokens   Int?
+  costUsd        Float?
+
+  // Metadata (entities extracted, etc.)
+  metadata       Json?
+
+  createdAt      DateTime @default(now())
+
+  // Relations
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([createdAt])
+  @@index([direction])
+}
+
+// ============ FAQ ============
+
+model FAQ {
+  id         String   @id @default(cuid())
+  tenantId   String
+
+  question   String
+  answer     String
+  keywords   String[] // Pour matching sémantique
+  category   String?  // "horaires", "tarifs", "services", "adresse"
+
+  isActive   Boolean  @default(true)
+  usageCount Int      @default(0)
+  lastUsedAt DateTime?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([category])
+  @@index([isActive])
+}
+
+// ============ AI USAGE TRACKING ============
+
+model AIUsage {
+  id           String   @id @default(cuid())
+  tenantId     String
+  month        String   // "2026-01"
+  model        String   // "x-ai/grok-4.1-fast", "anthropic/claude-sonnet-4.5", etc.
+  tier         String   // "TIER_1", "TIER_2", "TIER_3"
+
+  inputTokens  Int      @default(0)
+  outputTokens Int      @default(0)
+  requestCount Int      @default(0)
+  costUsd      Float    @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, month, model, tier])
+  @@index([tenantId])
+  @@index([month])
+}
