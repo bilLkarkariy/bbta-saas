@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getCurrentTenant } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { invalidateFAQCache } from "@/lib/cache";
 
 export async function createFAQ(formData: FormData) {
   const { tenantId } = await getCurrentTenant();
@@ -24,6 +25,8 @@ export async function createFAQ(formData: FormData) {
     },
   });
 
+  // Invalidate cache and revalidate path
+  invalidateFAQCache(tenantId);
   revalidatePath("/dashboard/faq");
   return { success: true };
 }
@@ -57,6 +60,8 @@ export async function updateFAQ(id: string, formData: FormData) {
     },
   });
 
+  // Invalidate cache and revalidate path
+  invalidateFAQCache(tenantId);
   revalidatePath("/dashboard/faq");
   return { success: true };
 }
@@ -77,6 +82,8 @@ export async function deleteFAQ(id: string) {
     where: { id },
   });
 
+  // Invalidate cache and revalidate path
+  invalidateFAQCache(tenantId);
   revalidatePath("/dashboard/faq");
   return { success: true };
 }

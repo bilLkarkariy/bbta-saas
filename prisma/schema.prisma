@@ -15,15 +15,24 @@ model Tenant {
   id            String   @id @default(cuid())
   name          String
   slug          String   @unique
-  businessType  String   // "salon", "restaurant", "ecommerce", "service"
+  businessType  String   // "beaute", "services", "ecommerce", "generic"
+  businessName  String?  // Display name for the business (salon name, shop name, etc.)
+
+  // Onboarding status
+  onboardingCompleted Boolean @default(false)
+
+  // Vertical configuration overrides (JSON)
+  verticalConfig Json?   // TenantVerticalOverrides - custom templates, disabled flows, etc.
 
   // WhatsApp config
   whatsappNumber String?
   twilioSid      String?
 
   // Business info
+  phone         String?
   address       String?
   city          String?
+  timezone      String   @default("Europe/Paris") // Timezone for date/time parsing
   businessHours String?
   services      String[] // Liste des services proposés
   pricing       String?  // Grille tarifaire
@@ -38,6 +47,10 @@ model Tenant {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  // Assignment settings
+  assignmentStrategy   String  @default("manual") // manual, round_robin, least_busy
+  autoAssignOnInbound  Boolean @default(false)
+
   // Relations
   users         User[]
   conversations Conversation[]
@@ -49,9 +62,20 @@ model Tenant {
   templates     MessageTemplate[]
   campaigns     Campaign[]
   integrations  Integration[]
+  bookings      Booking[]
+  analyticsDaily   AnalyticsDaily[]
+  analyticsHourly  AnalyticsHourly[]
 
   @@index([slug])
   @@index([status])
+}
+
+// User roles enum
+enum UserRole {
+  OWNER    // Full access, billing, settings
+  ADMIN    // Full access except billing
+  AGENT    // Inbox access, limited settings
+  VIEWER   // Read-only dashboard
 }
 
 model User {
@@ -59,16 +83,28 @@ model User {
   clerkId    String   @unique
   email      String   @unique
   name       String?
-  role       String   @default("member") // owner, admin, member
+  role       UserRole @default(AGENT)
+
+  // Super admin can access all tenants
+  superAdmin Boolean  @default(false)
+
+  // Agent settings
+  isAvailable      Boolean @default(true)
+  maxConversations Int     @default(10)
 
   tenantId   String
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Relations
+  assignedConversations Conversation[] @relation("AssignedAgent")
+  notes                 ConversationNote[]
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   @@index([tenantId])
   @@index([clerkId])
+  @@index([isAvailable])
 }
 
 // ============ CONVERSATIONS ============
@@ -86,6 +122,13 @@ model Conversation {
   status          String   @default("active") // active, resolved, escalated, archived
   lastMessageAt   DateTime @default(now())
 
+  // Assignment
+  assignedToId    String?
+  assignedTo      User?    @relation("AssignedAgent", fields: [assignedToId], references: [id])
+  assignedAt      DateTime?
+  priority        String   @default("normal") // low, normal, high, urgent
+  tags            String[] @default([])
+
   // Current flow tracking (for multi-step interactions)
   currentFlow     String?  // "booking", "lead_capture", null
   currentStep     String?  // Current step in the flow
@@ -101,12 +144,20 @@ model Conversation {
   // Relations
   tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   messages        Message[]
+  bookings        Booking[]
+  notes           ConversationNote[]
 
   @@unique([tenantId, customerPhone])
   @@index([tenantId])
   @@index([customerPhone])
   @@index([status])
   @@index([lastMessageAt])
+  @@index([assignedToId])
+  @@index([priority])
+  // Composite index for common query pattern: tenant + status + lastMessageAt
+  @@index([tenantId, status, lastMessageAt(sort: Desc)])
+  // Composite index for agent workload queries
+  @@index([tenantId, assignedToId, status])
 }
 
 model Message {
@@ -144,6 +195,8 @@ model Message {
   @@index([conversationId])
   @@index([createdAt])
   @@index([direction])
+  // Composite index for message history queries
+  @@index([conversationId, createdAt(sort: Desc)])
 }
 
 // ============ FAQ ============
@@ -195,6 +248,46 @@ model AIUsage {
   @@unique([tenantId, month, model, tier])
   @@index([tenantId])
   @@index([month])
+}
+
+// ============ BOOKINGS ============
+
+model Booking {
+  id             String   @id @default(cuid())
+  tenantId       String
+  conversationId String?
+
+  // Customer info
+  customerPhone  String
+  customerName   String?
+
+  // Booking details
+  service        String
+  date           String   // Format: YYYY-MM-DD
+  time           String   // Format: HH:MM
+  resourceId     String?  // Staff member, room, table, etc. for parallel bookings
+
+  // Status lifecycle
+  status         String   @default("pending") // pending, confirmed, cancelled, completed, no_show
+
+  // Additional info
+  notes          String?
+  reminderSent   Boolean  @default(false)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+
+  // Prevent double booking per resource (null resourceId = single-resource business)
+  @@unique([tenantId, date, time, resourceId])
+  @@index([tenantId])
+  @@index([date])
+  @@index([status])
+  @@index([customerPhone])
+  @@index([resourceId])
 }
 
 // ============ CONTACTS/CRM ============
@@ -427,4 +520,84 @@ model Integration {
 
   @@unique([tenantId, type])
   @@index([tenantId])
+}
+
+// ============ ANALYTICS ============
+
+model AnalyticsDaily {
+  id        String   @id @default(cuid())
+  tenantId  String
+  date      DateTime @db.Date
+
+  // Conversations
+  conversationsTotal     Int @default(0)
+  conversationsNew       Int @default(0)
+  conversationsResolved  Int @default(0)
+  conversationsEscalated Int @default(0)
+
+  // Messages
+  messagesInbound  Int @default(0)
+  messagesOutbound Int @default(0)
+  messagesAI       Int @default(0)
+  messagesHuman    Int @default(0)
+
+  // Performance
+  avgResponseTimeMs    Int?   // Average response time in milliseconds
+  avgResponseTimeHuman Int?   // Human-only response time
+  botResolutionRate    Float? // 0-1, percentage resolved by bot
+
+  // Leads & Contacts
+  leadsCapture   Int @default(0)
+  contactsNew    Int @default(0)
+
+  // AI Usage
+  aiTier1Calls Int @default(0)
+  aiTier2Calls Int @default(0)
+  aiTier3Calls Int @default(0)
+  aiCostEstimate Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@index([tenantId])
+  @@index([date])
+}
+
+model AnalyticsHourly {
+  id        String   @id @default(cuid())
+  tenantId  String
+  timestamp DateTime // Rounded to hour
+
+  conversationsActive Int @default(0)
+  messagesInbound     Int @default(0)
+  messagesOutbound    Int @default(0)
+
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, timestamp])
+  @@index([tenantId])
+  @@index([timestamp])
+}
+
+// ============ CONVERSATION NOTES ============
+
+model ConversationNote {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  content        String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@index([conversationId])
+  @@index([userId])
 }

@@ -100,7 +100,7 @@ export async function POST(req: Request) {
               clerkId: id,
               email,
               name: [first_name, last_name].filter(Boolean).join(" ") || null,
-              role: "owner",
+              role: "OWNER",
             },
           },
         },

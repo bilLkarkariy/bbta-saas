@@ -67,7 +67,7 @@ export function SiteFooter() {
                             </span>
                         </Link>
                         <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                            La plateforme d'automatisation intelligente pour les entreprises qui veulent scaler leur communication WhatsApp.
+                            La plateforme d&apos;automatisation intelligente pour les entreprises qui veulent scaler leur communication WhatsApp.
                         </p>
                         <div className="flex gap-4">
                             <Link href="#" className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-all">
@@ -103,7 +103,7 @@ export function SiteFooter() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 py-12 border-y border-white/5 items-center">
                     <div>
                         <h4 className="text-lg font-bold text-white mb-2">Restez à jour</h4>
-                        <p className="text-muted-foreground text-sm mb-4">Recevez nos dernières mises à jour et conseils d'IA.</p>
+                        <p className="text-muted-foreground text-sm mb-4">Recevez nos dernières mises à jour et conseils d&apos;IA.</p>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-sm">
                             <div className="flex gap-2">
                                 <input
@@ -119,7 +119,7 @@ export function SiteFooter() {
                                 <Button type="submit" size="sm" className={cn(
                                     status === "success" && "bg-emerald-500 hover:bg-emerald-600"
                                 )}>
-                                    {status === "success" ? "C'est prêt !" : "S'abonner"}
+                                    {status === "success" ? "C&apos;est prêt !" : "S&apos;abonner"}
                                 </Button>
                             </div>
                             {status === "error" && (

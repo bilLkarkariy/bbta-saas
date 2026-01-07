@@ -3,6 +3,7 @@ export interface SidebarUser {
   email: string;
   avatarUrl?: string;
   initials: string;
+  superAdmin?: boolean;
 }
 
 export interface SidebarWorkspace {

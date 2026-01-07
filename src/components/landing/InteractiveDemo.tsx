@@ -1,8 +1,15 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { useRef } from "react";
-import { QrCode, Settings, DollarSign } from "lucide-react";
+import { QrCode, Settings, DollarSign, type LucideIcon } from "lucide-react";
+
+interface Step {
+    id: number;
+    title: string;
+    description: string;
+    icon: LucideIcon;
+}
 
 const steps = [
     {
@@ -20,7 +27,7 @@ const steps = [
     {
         id: 3,
         title: "Suivez votre Croissance",
-        description: "Visualisez les conversions et l'augmentation de votre chiffre d'affaires en temps réel sur votre dashboard.",
+        description: "Visualisez les conversions et l&apos;augmentation de votre chiffre d&apos;affaires en temps réel sur votre dashboard.",
         icon: DollarSign,
     },
 ];
@@ -48,7 +55,7 @@ export function InteractiveDemo() {
                                     Prêt en quelques clics.
                                 </h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
-                                    Nous avons conçu Lumelia pour être assez puissant pour l'entreprise, mais assez simple pour tout le monde.
+                                    Nous avons conçu Lumelia pour être assez puissant pour l&apos;entreprise, mais assez simple pour tout le monde.
                                 </p>
                             </div>
 
@@ -82,7 +89,7 @@ export function InteractiveDemo() {
     );
 }
 
-function StepText({ step, index, scrollProgress }: { step: any, index: number, scrollProgress: any }) {
+function StepText({ step, index, scrollProgress }: { step: Step, index: number, scrollProgress: MotionValue<number> }) {
     // Calculate if this step is "active" based on scroll progress
     const threshold = (index - 1) / 3;
     const opacity = useTransform(scrollProgress, [threshold - 0.1, threshold, threshold + 0.3, threshold + 0.4], [0.3, 1, 1, 0.3]);
@@ -101,7 +108,7 @@ function StepText({ step, index, scrollProgress }: { step: any, index: number, s
     )
 }
 
-function Visuals({ index }: { index: any }) {
+function Visuals({ index }: { index: MotionValue<number> }) {
     const opacity1 = useTransform(index, [0, 0.2, 0.38], [1, 1, 0]);
     const opacity2 = useTransform(index, [0.32, 0.45, 0.65, 0.78], [0, 1, 1, 0]);
     const opacity3 = useTransform(index, [0.72, 0.85, 1], [0, 1, 1]);

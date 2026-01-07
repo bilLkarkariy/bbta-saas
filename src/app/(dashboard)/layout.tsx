@@ -31,12 +31,13 @@ export default async function DashboardLayout({
       <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none z-0" />
 
       {/* Main Layout Content - Floating Sidebar and Main Canvas */}
-      <div className="flex w-full h-full max-w-[1600px] mx-auto z-10 relative gap-6 lg:gap-8 overflow-hidden">
+      <div className="flex w-full h-full max-w-[1600px] mx-auto z-10 relative gap-4 md:gap-6 lg:gap-8 overflow-hidden">
         <SidebarWrapper
           user={{
             name: user.name || "User",
             email: user.email,
             initials,
+            superAdmin: user.superAdmin,
           }}
           workspace={{
             name: tenant.name,
@@ -49,7 +50,8 @@ export default async function DashboardLayout({
             label: "Messages",
           }}
         />
-        <main className="flex-1 h-full overflow-y-auto overflow-x-hidden scrollbar-thin pr-2 -mr-2">
+        {/* Main content - add left padding on mobile for hamburger button */}
+        <main className="flex-1 h-full overflow-y-auto overflow-x-hidden scrollbar-thin pr-2 -mr-2 pt-14 md:pt-0">
           {children}
         </main>
       </div>

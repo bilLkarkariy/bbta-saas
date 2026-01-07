@@ -39,9 +39,11 @@ const INTENT_PROMPTS: Record<Intent, string> = {
   FAQ: "Le client pose une question. Utilise la FAQ correspondante pour répondre naturellement.",
   BOOKING: "Le client veut prendre rendez-vous. Guide-le vers la prise de RDV ou demande ses disponibilités.",
   LEAD_CAPTURE: "Le client montre de l'intérêt. Récupère ses coordonnées ou propose un échange pour en discuter.",
+  SUPPORT: "Le client a un problème ou une réclamation. Montre de l'empathie et propose une solution ou une assistance.",
   ESCALATE: "Le client a besoin d'aide humaine. Informe-le qu'un membre de l'équipe va le recontacter rapidement.",
   OPT_OUT: "Le client veut se désabonner. Confirme que tu as bien noté sa demande et présente des excuses pour le dérangement.",
   GREETING: "Simple salutation. Réponds chaleureusement et propose ton aide.",
+  THANKS: "Le client remercie. Réponds brièvement et propose ton aide si besoin.",
   UNKNOWN: "Message pas clair. Demande poliment des précisions sur ce que le client recherche.",
 };
 

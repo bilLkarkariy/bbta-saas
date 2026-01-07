@@ -1,8 +1,15 @@
 "use client";
 
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Clock, AlertTriangle, Frown, Zap, Target, BarChart3, X, Check } from "lucide-react";
+import { Clock, AlertTriangle, Frown, Zap, Target, BarChart3, X, Check, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface CardItem {
+    title: string;
+    description: string;
+    icon: LucideIcon;
+    stats: string;
+}
 
 const problems = [
     {
@@ -46,7 +53,7 @@ const solutions = [
     }
 ];
 
-function Card({ item, isSolution = false, index }: { item: any, isSolution?: boolean, index: number }) {
+function Card({ item, isSolution = false, index }: { item: CardItem, isSolution?: boolean, index: number }) {
     const x = useMotionValue(0);
     const y = useMotionValue(0);
     const mouseX = useSpring(x, { stiffness: 400, damping: 40 });
@@ -128,7 +135,7 @@ export function ProblemSolution() {
                 {/* Header */}
                 <div className="text-center mb-24">
                     <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6 text-white italic">
-                        L'Ancien Monde vs <span className="text-emerald-400 not-italic">Lumelia</span>
+                        L&apos;Ancien Monde vs <span className="text-emerald-400 not-italic">Lumelia</span>
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                         Ne laissez plus la friction opérationnelle tuer votre croissance. Passez du chaos à la précision chirurgicale.
@@ -141,7 +148,7 @@ export function ProblemSolution() {
                     <div className="space-y-12">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent to-red-500/20" />
-                            <span className="text-red-400 font-mono text-xs font-black tracking-[0.3em] uppercase">L'Ancienne Méthode</span>
+                            <span className="text-red-400 font-mono text-xs font-black tracking-[0.3em] uppercase">L&apos;Ancienne Méthode</span>
                             <div className="h-0.5 w-12 bg-red-500/20" />
                         </div>
                         <div className="grid gap-6">

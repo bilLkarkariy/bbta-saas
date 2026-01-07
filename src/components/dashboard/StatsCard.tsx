@@ -24,7 +24,6 @@ export function StatsCard({
   icon,
   description,
   chartData,
-  variant = "default"
 }: StatsCardProps) {
   const [displayValue, setDisplayValue] = useState(0);
   const numericValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;

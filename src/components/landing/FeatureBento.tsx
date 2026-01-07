@@ -3,6 +3,15 @@
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { IconZapAnimated, IconShieldAnimated, IconUsersAnimated, IconGlobeAnimated, IconCpuAnimated } from "@/components/dashboard/DashboardIcons";
 import { cn } from "@/lib/utils";
+import type { ReactNode, ComponentType } from "react";
+
+interface Feature {
+    title: string;
+    description: string;
+    icon: ComponentType<{ className?: string }>;
+    className: string;
+    visual?: ReactNode;
+}
 
 const features = [
     {
@@ -66,7 +75,7 @@ const features = [
     }
 ];
 
-function FeatureCard({ feature, index }: { feature: any, index: number }) {
+function FeatureCard({ feature, index }: { feature: Feature, index: number }) {
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
@@ -144,7 +153,7 @@ export function FeatureBento() {
             <div className="container px-4 mx-auto max-w-7xl">
                 <div className="mb-20 text-center">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 text-white">
-                        Tout ce qu'il vous faut pour closer.
+                        Tout ce qu&apos;il vous faut pour closer.
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                         Des outils conçus pour la performance, la sécurité et surtout, votre croissance.

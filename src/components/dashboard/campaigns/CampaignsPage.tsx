@@ -4,9 +4,10 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Megaphone, Plus, Send, Clock, CheckCircle, XCircle, FileEdit } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Megaphone, Plus, Clock, CheckCircle, XCircle, FileEdit } from "lucide-react";
 import { toast } from "sonner";
-import { EmptyState, ConfirmDialog } from "@/components/shared";
+import { ConfirmDialog } from "@/components/shared";
 import { CampaignCard } from "./CampaignCard";
 import { deleteCampaign, sendCampaign, cancelCampaign } from "@/app/(dashboard)/dashboard/campaigns/actions";
 
@@ -123,65 +124,76 @@ export function CampaignsPage({ initialCampaigns }: CampaignsPageProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-7xl mx-auto px-1">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Campagnes</h1>
-          <p className="text-muted-foreground">
-            Gérez vos campagnes de messages broadcast
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-black tracking-tight text-slate-800">Campagnes</h1>
+          <p className="text-slate-500 font-medium">
+            Gérez vos campagnes broadcast et analysez vos performances.
           </p>
         </div>
-        <Button onClick={() => router.push("/dashboard/campaigns/new")}>
-          <Plus className="h-4 w-4 mr-2" />
+        <Button
+          onClick={() => router.push("/dashboard/campaigns/new")}
+          className="bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20 h-12 px-6 rounded-2xl font-bold transition-all active:scale-95 group"
+        >
+          <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform" />
           Nouvelle campagne
         </Button>
       </div>
 
       {/* Status tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
+      <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
         {statusTabs.map((tab) => (
-          <Button
+          <button
             key={tab.value}
-            variant={selectedStatus === tab.value ? "secondary" : "ghost"}
-            size="sm"
             onClick={() => setSelectedStatus(tab.value)}
-            className="whitespace-nowrap"
+            className={cn(
+              "flex items-center gap-2 whitespace-nowrap px-5 py-2.5 rounded-2xl font-bold text-sm transition-all duration-300 border",
+              selectedStatus === tab.value
+                ? "bg-white shadow-layered border-white text-primary"
+                : "bg-white/30 border-white/40 text-slate-400 hover:bg-white/50 hover:border-white/60"
+            )}
           >
-            <tab.icon className="h-4 w-4 mr-2" />
+            <tab.icon className={cn("h-4 w-4", selectedStatus === tab.value ? "text-primary" : "text-slate-400")} />
             {tab.label}
             {statusCounts[tab.value] > 0 && (
-              <span className="ml-2 text-xs bg-muted-foreground/20 px-1.5 py-0.5 rounded-full">
+              <span className={cn(
+                "ml-1 text-[10px] px-2 py-0.5 rounded-full font-black",
+                selectedStatus === tab.value ? "bg-primary/10 text-primary" : "bg-slate-200 text-slate-500"
+              )}>
                 {statusCounts[tab.value]}
               </span>
             )}
-          </Button>
+          </button>
         ))}
       </div>
 
       {/* Campaigns list */}
       {filteredCampaigns.length === 0 ? (
-        <Card className="p-8">
-          <EmptyState
-            icon={Megaphone}
-            title="Aucune campagne"
-            description={
-              selectedStatus !== "all"
-                ? "Aucune campagne avec ce statut."
-                : "Créez votre première campagne pour envoyer des messages à vos contacts."
-            }
-            action={
-              selectedStatus === "all"
-                ? {
-                    label: "Créer une campagne",
-                    onClick: () => router.push("/dashboard/campaigns/new"),
-                  }
-                : undefined
-            }
-          />
+        <Card className="glass-card p-12 flex flex-col items-center text-center border-none">
+          <div className="h-20 w-20 rounded-[28px] bg-primary/10 flex items-center justify-center mb-6 shadow-layered">
+            <Megaphone className="h-10 w-10 text-primary animate-pulse" />
+          </div>
+          <h3 className="text-xl font-bold text-slate-800 mb-2">
+            {selectedStatus !== "all" ? "Aucun résultat" : "Prêt à lancer votre première campagne ?"}
+          </h3>
+          <p className="text-slate-500 max-w-sm mb-8 font-medium">
+            {selectedStatus !== "all"
+              ? "Aucune campagne ne correspond à ce filtre actuellement."
+              : "Créez une campagne en quelques clics et touchez vos clients directement sur WhatsApp."}
+          </p>
+          {selectedStatus === "all" && (
+            <Button
+              onClick={() => router.push("/dashboard/campaigns/new")}
+              className="bg-white hover:bg-slate-50 text-slate-800 border-white shadow-xl h-11 px-8 rounded-xl font-bold"
+            >
+              C&apos;est parti
+            </Button>
+          )}
         </Card>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid gap-6">
           {filteredCampaigns.map((campaign) => (
             <CampaignCard
               key={campaign.id}
@@ -212,10 +224,9 @@ export function CampaignsPage({ initialCampaigns }: CampaignsPageProps) {
         open={showSendConfirm}
         onOpenChange={setShowSendConfirm}
         title="Envoyer la campagne"
-        description={`Voulez-vous envoyer cette campagne maintenant ? Les messages seront envoyés à ${
-          campaigns.find((c) => c.id === sendingId)?._count.recipients || 0
-        } destinataires.`}
-        confirmLabel="Envoyer"
+        description={`Voulez-vous envoyer cette campagne maintenant ? Les messages seront envoyés à ${campaigns.find((c) => c.id === sendingId)?._count.recipients || 0
+          } destinataires.`}
+        confirmLabel="Lancer maintenant"
         onConfirm={confirmSend}
       />
     </div>

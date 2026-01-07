@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,38 +21,34 @@ export function SearchInput({
   className,
 }: SearchInputProps) {
   const [internalValue, setInternalValue] = useState(controlledValue || "");
-  const onChangeRef = useRef(onChange);
-  const isFirstRender = useRef(true);
+  const [lastControlledValue, setLastControlledValue] = useState(controlledValue);
+  // Track initial value to skip first debounce callback
+  const [initialValue] = useState(controlledValue || "");
 
-  // Keep ref updated with latest onChange
-  useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
-  useEffect(() => {
-    if (controlledValue !== undefined) {
-      setInternalValue(controlledValue);
-    }
-  }, [controlledValue]);
+  // Sync internal value with controlled value when it changes externally
+  // Using derived state pattern instead of effect
+  if (controlledValue !== undefined && controlledValue !== lastControlledValue) {
+    setLastControlledValue(controlledValue);
+    setInternalValue(controlledValue);
+  }
 
   useEffect(() => {
-    // Skip the initial render to avoid calling onChange on mount
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    // Skip if internal value matches what we started with (initial render)
+    if (internalValue === initialValue) {
       return;
     }
 
     const timer = setTimeout(() => {
-      onChangeRef.current(internalValue);
+      onChange(internalValue);
     }, debounceMs);
 
     return () => clearTimeout(timer);
-  }, [internalValue, debounceMs]);
+  }, [internalValue, debounceMs, onChange, initialValue]);
 
   const handleClear = useCallback(() => {
     setInternalValue("");
-    onChangeRef.current("");
-  }, []);
+    onChange("");
+  }, [onChange]);
 
   return (
     <div className={cn("relative", className)}>

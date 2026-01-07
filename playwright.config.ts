@@ -12,10 +12,26 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
+  // Visual regression snapshot config
+  snapshotDir: "./e2e/__snapshots__",
+  snapshotPathTemplate: "{snapshotDir}/{testFilePath}/{arg}{ext}",
+  expect: {
+    toHaveScreenshot: {
+      // Default threshold for visual comparisons
+      threshold: 0.2,
+      // Animations can cause flakiness
+      animations: "disabled",
+    },
+  },
   projects: [
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+    },
+    // Mobile visual testing
+    {
+      name: "mobile-chrome",
+      use: { ...devices["Pixel 5"] },
     },
   ],
   webServer: {

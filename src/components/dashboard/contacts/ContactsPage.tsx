@@ -143,163 +143,222 @@ export function ContactsPage({ initialContacts, tags, totalCount }: ContactsPage
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Contacts</h1>
-          <p className="text-muted-foreground">
-            {totalCount} contact{totalCount !== 1 ? "s" : ""} au total
+    <div className="space-y-8 animate-fade-up">
+      {/* Header Area */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-1">
+          <p className="text-label text-primary/80">Gestion d&apos;audience</p>
+          <h1 className="text-stat-secondary text-slate-900 dark:text-white flex items-center gap-3">
+            <Users className="h-8 w-8 text-primary/40" />
+            Contacts
+          </h1>
+          <p className="text-meta">
+            {totalCount} contact{totalCount !== 1 ? "s" : ""} au total dans votre base
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setShowImport(true)}>
-            <Upload className="h-4 w-4 mr-2" />
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowImport(true)}
+            className="glass transition-all hover:bg-white/50"
+          >
+            <Upload className="h-4 w-4 mr-2 text-primary" />
             Importer
           </Button>
-          <Button onClick={() => setShowForm(true)}>
+          <Button
+            onClick={() => setShowForm(true)}
+            className="shadow-layered hover:shadow-layered-lg transition-all duration-300 px-6"
+          >
             <Plus className="h-4 w-4 mr-2" />
-            Ajouter
+            Nouveau Contact
           </Button>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex items-center gap-4">
-        <SearchInput
-          placeholder="Rechercher un contact..."
-          value={search}
-          onChange={setSearch}
-          className="w-64"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Tag className="h-4 w-4 mr-2" />
-              {selectedTag ? tags.find((t) => t.id === selectedTag)?.name : "Tous les tags"}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setSelectedTag(null)}>
-              Tous les tags
-            </DropdownMenuItem>
-            {tags.map((tag) => (
-              <DropdownMenuItem key={tag.id} onClick={() => setSelectedTag(tag.id)}>
-                <span
-                  className="h-2 w-2 rounded-full mr-2"
-                  style={{ backgroundColor: tag.color }}
-                />
-                {tag.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Button variant="ghost" size="sm" onClick={() => setShowTagManager(true)}>
-          Gérer les tags
-        </Button>
+      {/* Filters & Actions Bar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+        <div className="lg:col-span-4 relative group">
+          <SearchInput
+            placeholder="Rechercher par nom, email ou mobile..."
+            value={search}
+            onChange={setSearch}
+            className="w-full bg-white/50 border-white/40 focus:bg-white transition-all shadow-sm group-hover:shadow-md h-11"
+          />
+        </div>
 
-        {selectedIds.size > 0 && (
-          <Button variant="destructive" size="sm" onClick={handleBulkDelete} disabled={isPending}>
-            <Trash2 className="h-4 w-4 mr-2" />
-            Supprimer ({selectedIds.size})
+        <div className="lg:col-span-8 flex flex-wrap items-center gap-3 justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-10 px-4 glass border-white/20">
+                <Tag className="h-4 w-4 mr-2 text-primary/60" />
+                {selectedTag ? tags.find((t) => t.id === selectedTag)?.name : "Tous les segments"}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 glass border-white/20">
+              <DropdownMenuItem onClick={() => setSelectedTag(null)}>
+                Tous les segments
+              </DropdownMenuItem>
+              {tags.map((tag) => (
+                <DropdownMenuItem key={tag.id} onClick={() => setSelectedTag(tag.id)}>
+                  <span
+                    className="h-2 w-2 rounded-full mr-2"
+                    style={{ backgroundColor: tag.color }}
+                  />
+                  {tag.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowTagManager(true)}
+            className="text-primary hover:text-primary/80 hover:bg-primary/5 h-10 px-4 transition-colors font-medium"
+          >
+            Paramétrer les tags
           </Button>
-        )}
+
+          {selectedIds.size > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              disabled={isPending}
+              className="h-10 px-4 shadow-layered animate-scale-in"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Supprimer ({selectedIds.size})
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Table */}
+      {/* Table Container */}
       {filteredContacts.length === 0 ? (
-        <Card className="p-8">
+        <Card className="glass-card p-12 text-center border-dashed border-2">
           <EmptyState
             icon={Users}
-            title="Aucun contact"
-            description={search || selectedTag ? "Aucun contact ne correspond à vos critères." : "Commencez par ajouter votre premier contact."}
+            title="Votre carnet d'adresses est vide"
+            description={search || selectedTag ? "Désolé, nous n'avons trouvé aucun contact correspondant à votre recherche." : "Ajoutez manuellement vos contacts ou importez un fichier CSV pour commencer vos campagnes."}
             action={
               !search && !selectedTag
-                ? { label: "Ajouter un contact", onClick: () => setShowForm(true) }
+                ? { label: "Créer mon premier contact", onClick: () => setShowForm(true) }
                 : undefined
             }
           />
         </Card>
       ) : (
-        <Card className="p-0 overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Tout sélectionner" />
-                </TableHead>
-                <TableHead>Nom</TableHead>
-                <TableHead>Téléphone</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Entreprise</TableHead>
-                <TableHead>Tags</TableHead>
-                <TableHead className="w-12"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredContacts.map((contact) => (
-                <TableRow key={contact.id} className="group">
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedIds.has(contact.id)}
-                      onCheckedChange={() => toggleOne(contact.id)}
-                      aria-label={`Sélectionner ${contact.name || contact.phone}`}
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{contact.name || "—"}</TableCell>
-                  <TableCell className="font-mono text-sm">{contact.phone}</TableCell>
-                  <TableCell className="text-muted-foreground">{contact.email || "—"}</TableCell>
-                  <TableCell className="text-muted-foreground">{contact.company || "—"}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1 flex-wrap">
-                      {contact.tags.map((tag) => (
-                        <Badge
-                          key={tag.id}
-                          variant="outline"
-                          className="text-xs"
-                          style={{ borderColor: tag.color, color: tag.color }}
-                        >
-                          {tag.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setEditingContact(contact);
-                            setShowForm(true);
-                          }}
-                        >
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Modifier
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={() => handleDelete(contact.id)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Supprimer
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+        <div className="glass-card border-none ring-1 ring-white/40 overflow-hidden shadow-atmosphere animate-fade-in stagger-2">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-white/20">
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-12 py-5 pl-6">
+                    <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Tout sélectionner" />
+                  </TableHead>
+                  <TableHead className="font-bold text-slate-800 dark:text-slate-200">Contact</TableHead>
+                  <TableHead className="font-bold text-slate-800 dark:text-slate-200">Téléphone</TableHead>
+                  <TableHead className="font-bold text-slate-800 dark:text-slate-200 hidden md:table-cell">Entreprise</TableHead>
+                  <TableHead className="font-bold text-slate-800 dark:text-slate-200">Tags</TableHead>
+                  <TableHead className="w-12 pr-6"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+              </TableHeader>
+              <TableBody>
+                {filteredContacts.map((contact) => (
+                  <TableRow
+                    key={contact.id}
+                    className="group border-b border-slate-100/50 dark:border-slate-800/10 hover:bg-slate-50/50 dark:hover:bg-slate-800/5 transition-colors"
+                  >
+                    <TableCell className="pl-6 py-4">
+                      <Checkbox
+                        checked={selectedIds.has(contact.id)}
+                        onCheckedChange={() => toggleOne(contact.id)}
+                        aria-label={`Sélectionner ${contact.name || contact.phone}`}
+                      />
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-900 dark:text-white">
+                          {contact.name || "Contact sans nom"}
+                        </span>
+                        <span className="text-xs text-slate-400 font-mono">
+                          {contact.email || "Aucun email"}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm tracking-tight text-slate-600 dark:text-slate-400 py-4">
+                      {contact.phone}
+                    </TableCell>
+                    <TableCell className="text-slate-500 dark:text-slate-400 py-4 hidden md:table-cell">
+                      {contact.company ? (
+                        <span className="flex items-center gap-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-slate-200" />
+                          {contact.company}
+                        </span>
+                      ) : "—"}
+                    </TableCell>
+                    <TableCell className="py-4">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {contact.tags.map((tag) => (
+                          <Badge
+                            key={tag.id}
+                            variant="outline"
+                            className="text-[10px] uppercase tracking-wider font-bold h-5 px-2 bg-white/5 border-none shadow-sm"
+                            style={{ backgroundColor: `${tag.color}15`, color: tag.color, border: `1px solid ${tag.color}30` }}
+                          >
+                            {tag.name}
+                          </Badge>
+                        ))}
+                        {contact.tags.length === 0 && (
+                          <span className="text-xs text-slate-300 italic">Aucun tag</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="pr-6 py-4">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-white/80"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="glass w-40">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingContact(contact);
+                              setShowForm(true);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <Pencil className="h-4 w-4 mr-2 text-primary/60" />
+                            Modifier
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive cursor-pointer hover:bg-destructive/5"
+                            onClick={() => handleDelete(contact.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Supprimer
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="p-4 bg-slate-50/30 dark:bg-slate-900/30 border-t border-white/10 flex justify-between items-center px-8">
+            <span className="text-xs text-slate-400">
+              Affichage de {filteredContacts.length} sur {totalCount} contacts
+            </span>
+            {/* Pagination can be added here if needed */}
+          </div>
+        </div>
       )}
 
       {/* Dialogs */}
@@ -334,8 +393,8 @@ export function ContactsPage({ initialContacts, tags, totalCount }: ContactsPage
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
         title="Supprimer le contact"
-        description="Cette action est irréversible. Le contact sera définitivement supprimé."
-        confirmLabel="Supprimer"
+        description="Cette action est irréversible. Le contact sera définitivement retiré de votre base de données."
+        confirmLabel="Supprimer définitivement"
         onConfirm={confirmDelete}
         variant="destructive"
       />

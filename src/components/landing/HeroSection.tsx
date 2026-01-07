@@ -5,7 +5,7 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Play, CheckCircle, Star, Users, Zap } from "lucide-react";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { ChartWidget } from "@/components/dashboard/ChartWidget";
+import { LazyChartWidget } from "@/components/dashboard/charts/LazyChart";
 import { IconMessages, IconContacts } from "@/components/dashboard/DashboardIcons";
 import { Magnetic } from "@/components/ui/Magnetic";
 
@@ -19,7 +19,6 @@ export function HeroSection() {
     const y = useTransform(scrollYProgress, [0, 1], [0, -150]); // Move UP for parallax reveal
     const rotateX = useTransform(scrollYProgress, [0, 0.4], [15, 0]);
     const scale = useTransform(scrollYProgress, [0, 0.4], [0.95, 1]);
-    const opacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]); // Quick fade-in on scroll if missed initially
 
     return (
         <section ref={containerRef} className="relative min-h-[140vh] pt-40 overflow-hidden bg-black">
@@ -207,7 +206,7 @@ export function HeroSection() {
                                     />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <ChartWidget variant="glass" />
+                                    <LazyChartWidget />
                                 </div>
                             </div>
                         </div>

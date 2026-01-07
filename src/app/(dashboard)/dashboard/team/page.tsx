@@ -1,17 +1,45 @@
-import { UsersRound } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { getCurrentTenant } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { TeamPage } from "@/components/dashboard/team";
 
-export default function TeamPage() {
+export default async function TeamPageRoute() {
+  const { tenant, user } = await getCurrentTenant();
+
+  // Get all team members with conversation counts
+  const members = await db.user.findMany({
+    where: { tenantId: tenant.id },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      isAvailable: true,
+      maxConversations: true,
+      _count: {
+        select: {
+          assignedConversations: true,
+        },
+      },
+    },
+    orderBy: [
+      { role: "asc" }, // OWNER first
+      { name: "asc" },
+    ],
+  });
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold mb-6">Équipe</h1>
-      <Card className="p-12 text-center">
-        <UsersRound className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h2 className="text-lg font-semibold mb-2">Bientôt disponible</h2>
-        <p className="text-muted-foreground">
-          Invitez des membres de votre équipe et gérez les permissions.
-        </p>
-      </Card>
-    </div>
+    <TeamPage
+      members={members}
+      currentUser={{
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        isAvailable: user.isAvailable,
+        maxConversations: user.maxConversations,
+      }}
+      assignmentStrategy={tenant.assignmentStrategy as "manual" | "round_robin" | "least_busy"}
+      autoAssignOnInbound={tenant.autoAssignOnInbound}
+    />
   );
 }

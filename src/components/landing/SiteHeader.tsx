@@ -46,7 +46,7 @@ export function SiteHeader() {
                 </Link>
 
                 {/* Desktop Nav */}
-                <nav className="hidden md:flex items-center gap-8">
+                <nav className="hidden md:flex items-center gap-8" aria-label="Navigation principale">
                     {navItems.map((item) => (
                         <Link
                             key={item.name}
@@ -72,15 +72,20 @@ export function SiteHeader() {
                 <button
                     className="md:hidden p-2 text-white"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                    aria-expanded={mobileMenuOpen}
+                    aria-controls="mobile-menu"
                 >
-                    {mobileMenuOpen ? <X /> : <Menu />}
+                    {mobileMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
                 </button>
             </div>
 
             {/* Mobile Menu */}
             <AnimatePresence>
                 {mobileMenuOpen && (
-                    <motion.div
+                    <motion.nav
+                        id="mobile-menu"
+                        aria-label="Navigation mobile"
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
@@ -107,7 +112,7 @@ export function SiteHeader() {
                                 </Button>
                             </div>
                         </div>
-                    </motion.div>
+                    </motion.nav>
                 )}
             </AnimatePresence>
         </header>

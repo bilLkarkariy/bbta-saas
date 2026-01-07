@@ -10,8 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Tag } from "lucide-react";
 import { toast } from "sonner";
 import { createTag, deleteTag } from "@/app/(dashboard)/dashboard/contacts/actions";
 
@@ -80,34 +79,49 @@ export function TagManager({ open, onOpenChange, tags }: TagManagerProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Gérer les tags</DialogTitle>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden border-none glass shadow-atmosphere rounded-[24px]">
+        <DialogHeader className="p-6 pb-2">
+          <DialogTitle className="text-xl font-bold flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Tag className="h-4 w-4 text-primary" />
+            </div>
+            Gérer les segments
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Create new tag */}
-          <div className="flex items-end gap-2">
-            <div className="flex-1 space-y-2">
-              <Label htmlFor="tagName">Nouveau tag</Label>
-              <Input
-                id="tagName"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="VIP, Prospect..."
-                onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              />
-            </div>
+        <div className="p-6 pt-2 space-y-6">
+          {/* Create new tag section */}
+          <div className="space-y-4 bg-white/40 dark:bg-slate-900/40 p-4 rounded-2xl border border-white/40 shadow-sm animate-fade-in">
             <div className="space-y-2">
-              <Label>Couleur</Label>
-              <div className="flex gap-1">
+              <Label htmlFor="tagName" className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Nom du nouveau segment</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="tagName"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="ex: Clients VIP, Prospect..."
+                  className="bg-white/60 dark:bg-slate-900/60 border-white/20 h-10 flex-1"
+                  onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+                />
+                <Button
+                  onClick={handleCreate}
+                  disabled={isPending || !newName.trim()}
+                  className="h-10 px-4 shadow-layered"
+                >
+                  {isPending ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" /> : <Plus className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">Choix de la couleur</Label>
+              <div className="flex flex-wrap gap-2 pt-1">
                 {colors.map((color) => (
                   <button
                     key={color}
                     type="button"
-                    className={`h-8 w-8 rounded-md transition-all ${
-                      newColor === color ? "ring-2 ring-offset-2 ring-primary" : ""
-                    }`}
+                    className={`h-7 w-7 rounded-full transition-all duration-300 transform hover:scale-110 ${newColor === color ? "ring-2 ring-primary ring-offset-2 scale-110 shadow-md" : "opacity-80 hover:opacity-100"
+                      }`}
                     style={{ backgroundColor: color }}
                     onClick={() => setNewColor(color)}
                     aria-label={`Couleur ${color}`}
@@ -115,44 +129,57 @@ export function TagManager({ open, onOpenChange, tags }: TagManagerProps) {
                 ))}
               </div>
             </div>
-            <Button onClick={handleCreate} disabled={isPending || !newName.trim()}>
-              <Plus className="h-4 w-4" />
-            </Button>
           </div>
 
-          {/* Existing tags */}
-          <div className="space-y-2">
-            <Label>Tags existants</Label>
-            {localTags.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">
-                Aucun tag créé
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {localTags.map((tag) => (
-                  <div
-                    key={tag.id}
-                    className="flex items-center justify-between p-2 rounded-lg bg-muted/50"
-                  >
-                    <Badge
-                      variant="outline"
-                      style={{ borderColor: tag.color, color: tag.color }}
+          {/* Existing tags section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between ml-1 leading-none">
+              <Label className="text-xs font-bold uppercase tracking-wider text-slate-500">Segments existants</Label>
+              <span className="text-[10px] font-bold text-slate-400">{localTags.length} AU TOTAL</span>
+            </div>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin">
+              {localTags.length === 0 ? (
+                <div className="text-center py-8 bg-slate-50/50 dark:bg-white/5 rounded-xl border border-dashed border-slate-200">
+                  <p className="text-xs text-slate-400 italic">
+                    Aucun segment n&apos;a été créé pour le moment.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2">
+                  {localTags.map((tag) => (
+                    <div
+                      key={tag.id}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-white/60 dark:bg-slate-900/60 border border-white/20 group hover:shadow-sm transition-all animate-scale-in"
                     >
-                      {tag.name}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => handleDelete(tag.id)}
-                      disabled={isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full shadow-sm" style={{ backgroundColor: tag.color }} />
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{tag.name}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-slate-400 hover:text-destructive hover:bg-destructive/5 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                        onClick={() => handleDelete(tag.id)}
+                        disabled={isPending}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="glass px-8 h-10 border-white/40 hover:bg-white/60"
+            >
+              Fermer
+            </Button>
           </div>
         </div>
       </DialogContent>

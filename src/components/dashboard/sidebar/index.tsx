@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -306,6 +307,17 @@ export function Sidebar({
                 <Bell className="mr-2 h-4 w-4" aria-hidden="true" />
                 Notifications
               </DropdownMenuItem>
+              {user.superAdmin && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="flex items-center">
+                      <Shield className="mr-2 h-4 w-4 text-red-500" aria-hidden="true" />
+                      <span className="text-red-500 font-medium">Super Admin</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={onLogout}>
                 <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />

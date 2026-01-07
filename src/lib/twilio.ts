@@ -1,5 +1,6 @@
 import twilio from "twilio";
 import crypto from "crypto";
+import { z } from "zod";
 
 // Lazy initialization to avoid runtime errors if credentials aren't set
 let _twilioClient: twilio.Twilio | null = null;
@@ -79,35 +80,58 @@ export function verifyTwilioSignature(
     .update(data, "utf-8")
     .digest("base64");
 
-  // Constant-time comparison
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
+  // Constant-time comparison with length check
+  try {
+    const signatureBuffer = Buffer.from(signature);
+    const expectedBuffer = Buffer.from(expectedSignature);
+
+    // Buffers must be same length for timingSafeEqual
+    if (signatureBuffer.length !== expectedBuffer.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(signatureBuffer, expectedBuffer);
+  } catch {
+    return false;
+  }
 }
 
-export interface TwilioWebhookPayload {
-  MessageSid: string;
-  AccountSid: string;
-  From: string;
-  To: string;
-  Body: string;
-  NumMedia: string;
-  ProfileName?: string;
-  WaId?: string;
-}
+// Zod schema for Twilio webhook validation
+const TwilioWebhookSchema = z.object({
+  MessageSid: z.string().min(1, "MessageSid is required"),
+  AccountSid: z.string().min(1, "AccountSid is required"),
+  From: z.string().min(1, "From is required"),
+  To: z.string().min(1, "To is required"),
+  Body: z.string().max(4096).default(""), // WhatsApp message limit
+  NumMedia: z.string().default("0"),
+  ProfileName: z.string().optional(),
+  WaId: z.string().optional(),
+  MediaUrl0: z.string().optional(),
+  MediaContentType0: z.string().optional(),
+});
+
+export type TwilioWebhookPayload = z.infer<typeof TwilioWebhookSchema>;
 
 export function parseTwilioWebhook(
   formData: Record<string, string>
 ): TwilioWebhookPayload {
-  return {
-    MessageSid: formData.MessageSid || "",
-    AccountSid: formData.AccountSid || "",
-    From: formData.From || "",
-    To: formData.To || "",
-    Body: formData.Body || "",
-    NumMedia: formData.NumMedia || "0",
-    ProfileName: formData.ProfileName,
-    WaId: formData.WaId,
-  };
+  // Use safeParse for graceful handling of invalid data
+  const result = TwilioWebhookSchema.safeParse(formData);
+
+  if (!result.success) {
+    console.error("[Twilio] Webhook validation failed:", result.error.issues);
+    // Return minimal valid payload for graceful degradation
+    return {
+      MessageSid: formData.MessageSid || "",
+      AccountSid: formData.AccountSid || "",
+      From: formData.From || "",
+      To: formData.To || "",
+      Body: formData.Body || "",
+      NumMedia: formData.NumMedia || "0",
+      ProfileName: formData.ProfileName,
+      WaId: formData.WaId,
+    };
+  }
+
+  return result.data;
 }

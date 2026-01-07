@@ -133,9 +133,9 @@ export function IconZapAnimated({ className, ...props }: IconProps) {
                 </linearGradient>
             </defs>
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="url(#zap-grad)" fillOpacity="0.2" stroke="url(#zap-grad)">
-                {/* @ts-ignore */}
+                {/* @ts-expect-error - SVG animate element not in React types */}
                 <animate attributeName="stroke-opacity" values="1;0.5;1" duration="2s" repeatCount="indefinite" />
-                {/* @ts-ignore */}
+                {/* @ts-expect-error - SVG animate element not in React types */}
                 <animate attributeName="fill-opacity" values="0.2;0.5;0.2" duration="2s" repeatCount="indefinite" />
             </path>
         </svg>
@@ -153,7 +153,7 @@ export function IconShieldAnimated({ className, ...props }: IconProps) {
             </defs>
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="url(#shield-grad)" fillOpacity="0.1" stroke="url(#shield-grad)" />
             <path d="m9 12 2 2 4-4" stroke="url(#shield-grad)" strokeWidth="2.5" strokeDasharray="10" strokeDashoffset="10">
-                {/* @ts-ignore */}
+                {/* @ts-expect-error - SVG animate element not in React types */}
                 <animate attributeName="stroke-dashoffset" values="10;0" duration="1s" begin="0.5s" fill="freeze" />
             </path>
         </svg>
@@ -188,7 +188,7 @@ export function IconGlobeAnimated({ className, ...props }: IconProps) {
             </defs>
             <circle cx="12" cy="12" r="10" stroke="url(#globe-grad)" />
             <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" stroke="url(#globe-grad)" opacity="0.7">
-                {/* @ts-ignore */}
+                {/* @ts-expect-error - SVG animate element not in React types */}
                 <animate attributeName="d" values="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20;M12 2a5 5 0 0 0 0 20 5 5 0 0 0 0-20;M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" duration="4s" repeatCount="indefinite" />
             </path>
             <path d="M2 12h20" stroke="url(#globe-grad)" />
@@ -207,7 +207,7 @@ export function IconCpuAnimated({ className, ...props }: IconProps) {
             </defs>
             <rect x="4" y="4" width="16" height="16" rx="2" stroke="url(#cpu-grad)" />
             <rect x="9" y="9" width="6" height="6" fill="url(#cpu-grad)" fillOpacity="0.2" stroke="none">
-                {/* @ts-ignore */}
+                {/* @ts-expect-error - SVG animate element not in React types */}
                 <animate attributeName="opacity" values="0.2;0.6;0.2" duration="1.5s" repeatCount="indefinite" />
             </rect>
             <path d="M9 1v3" stroke="url(#cpu-grad)" opacity="0.5" />

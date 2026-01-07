@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Info, HelpCircle } from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -56,7 +56,7 @@ export function PricingSection() {
                         whileInView={{ opacity: 1, scale: 1 }}
                         className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-xs font-black uppercase tracking-widest mb-8"
                     >
-                        🔥 14 jours d'essai, sans carte bancaire
+                        🔥 14 jours d&apos;essai, sans carte bancaire
                     </motion.div>
 
                     <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-6 text-white">
@@ -150,7 +150,7 @@ export function PricingSection() {
                     </div>
                     <div className="mt-12 text-center">
                         <p className="text-sm text-muted-foreground">
-                            D'autres questions ? <Link href="#" className="text-primary hover:underline font-bold">Parlez-en à notre équipe</Link>.
+                            D&apos;autres questions ? <Link href="#" className="text-primary hover:underline font-bold">Parlez-en à notre équipe</Link>.
                         </p>
                     </div>
                 </div>

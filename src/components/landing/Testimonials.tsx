@@ -59,7 +59,7 @@ export function Testimonials() {
                             </div>
 
                             <p className="text-lg text-foreground leading-relaxed mb-8 italic">
-                                "{t.content}"
+                                &quot;{t.content}&quot;
                             </p>
 
                             <div className="flex items-center gap-4 border-t border-white/5 pt-6">

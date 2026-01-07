@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StatsCard } from "@/components/dashboard/StatsCard";
-import { ChartWidget } from "@/components/dashboard/ChartWidget";
+import { LazyChartWidget } from "@/components/dashboard/charts/LazyChart";
 import { RecentConversations } from "@/components/dashboard/RecentConversations";
 import { WelcomeIllustration } from "@/components/dashboard/WelcomeIllustration";
 import { IconMessages, IconContacts, IconTarget, IconCalendar } from "@/components/dashboard/DashboardIcons";
@@ -19,7 +19,7 @@ function getGreeting(): string {
 }
 
 export default async function DashboardPage() {
-  const { user, tenant, tenantId } = await getCurrentTenant();
+  const { user, tenantId } = await getCurrentTenant();
   const firstName = user.name?.split(" ")[0] || "there";
 
   // Fetch real stats from database
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
             <h1 id="dashboard-heading" className="text-2xl font-bold tracking-tight">
               {getGreeting()}, <span className="text-primary">{firstName}</span>
             </h1>
-            <p className="text-muted-foreground text-sm mt-0.5">Voici l'essentiel de votre activité.</p>
+            <p className="text-muted-foreground text-sm mt-0.5">Voici l&apos;essentiel de votre activité.</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ export default async function DashboardPage() {
         <h2 id="activity-heading" className="sr-only">Activité et progression</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 h-full">
-            <ChartWidget />
+            <LazyChartWidget />
           </div>
           <div className="lg:col-span-1 h-full">
             <OnboardingWidget faqCount={faqCount} />
