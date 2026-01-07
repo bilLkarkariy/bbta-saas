@@ -1,0 +1,5 @@
+<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="120" height="40" rx="8" fill="white" fill-opacity="0.05" />
+  <text x="15" y="25" font-family="Arial, sans-serif" font-weight="bold" font-size="19" fill="white">PulseKit</text>
+  <circle cx="100" cy="20" r="4" fill="#3b82f6" />
+</svg>

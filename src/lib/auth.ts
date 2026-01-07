@@ -2,21 +2,28 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "./db";
 
 export async function getCurrentTenant() {
+  console.log("[Auth] getCurrentTenant started");
+  const start = Date.now();
+
   const { userId } = await auth();
+  console.log(`[Auth] auth() took ${Date.now() - start}ms, userId: ${userId}`);
 
   if (!userId) {
     throw new Error("Unauthorized");
   }
 
+  const dbStart = Date.now();
   const user = await db.user.findUnique({
     where: { clerkId: userId },
     include: { tenant: true },
   });
+  console.log(`[Auth] db.user.findUnique took ${Date.now() - dbStart}ms`);
 
   if (!user) {
     throw new Error("User not found");
   }
 
+  console.log(`[Auth] getCurrentTenant completed in ${Date.now() - start}ms`);
   return {
     user,
     tenant: user.tenant,

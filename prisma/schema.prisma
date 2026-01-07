@@ -43,6 +43,12 @@ model Tenant {
   conversations Conversation[]
   faqs          FAQ[]
   aiUsage       AIUsage[]
+  contacts      Contact[]
+  tags          Tag[]
+  segments      Segment[]
+  templates     MessageTemplate[]
+  campaigns     Campaign[]
+  integrations  Integration[]
 
   @@index([slug])
   @@index([status])
@@ -189,4 +195,236 @@ model AIUsage {
   @@unique([tenantId, month, model, tier])
   @@index([tenantId])
   @@index([month])
+}
+
+// ============ CONTACTS/CRM ============
+
+model Contact {
+  id            String   @id @default(cuid())
+  tenantId      String
+
+  // Contact info
+  phone         String
+  name          String?
+  email         String?
+  company       String?
+
+  // Segmentation
+  tags          Tag[]    @relation("ContactTags")
+
+  // Source tracking
+  source        String   @default("manual") // "manual", "import", "whatsapp", "api"
+
+  // Engagement metrics
+  lastContactAt DateTime?
+  messageCount  Int      @default(0)
+
+  // Custom fields (JSON for flexibility)
+  customFields  Json?
+
+  // Opt-out status
+  isOptedOut    Boolean  @default(false)
+  optedOutAt    DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  campaignRecipients CampaignRecipient[]
+
+  @@unique([tenantId, phone])
+  @@index([tenantId])
+  @@index([name])
+  @@index([createdAt])
+}
+
+model Tag {
+  id         String    @id @default(cuid())
+  tenantId   String
+  name       String
+  color      String    @default("#3B82F6") // Hex color
+
+  contacts   Contact[] @relation("ContactTags")
+
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime  @default(now())
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model Segment {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+
+  // Dynamic filter rules (JSON)
+  filterRules Json?     // e.g., {"tags": ["vip"], "lastContactAt": {"gte": "30d"}}
+
+  // Can be static (manual) or dynamic (filter-based)
+  isDynamic   Boolean   @default(false)
+
+  contactCount Int      @default(0)
+
+  campaigns   Campaign[]
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+// ============ MESSAGE TEMPLATES ============
+
+model MessageTemplate {
+  id           String   @id @default(cuid())
+  tenantId     String
+
+  name         String
+  content      String   // Message body with {{variables}}
+  category     String   @default("general") // "marketing", "utility", "authentication"
+
+  // Variables metadata
+  variables    String[] // ["name", "company", "date"]
+
+  // WhatsApp Business API approval
+  whatsappTemplateId   String?  // Meta template ID if approved
+  whatsappStatus       String   @default("draft") // "draft", "pending", "approved", "rejected"
+  whatsappRejectionReason String?
+
+  // Usage tracking
+  usageCount   Int      @default(0)
+  lastUsedAt   DateTime?
+
+  isActive     Boolean  @default(true)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  campaigns    Campaign[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([category])
+}
+
+// ============ CAMPAIGNS ============
+
+model Campaign {
+  id           String   @id @default(cuid())
+  tenantId     String
+
+  name         String
+  description  String?
+
+  // Status lifecycle
+  status       String   @default("draft") // "draft", "scheduled", "sending", "sent", "cancelled"
+
+  // Targeting
+  segmentId    String?
+  segment      Segment? @relation(fields: [segmentId], references: [id])
+
+  // Template
+  templateId   String?
+  template     MessageTemplate? @relation(fields: [templateId], references: [id])
+
+  // Custom message (if not using template)
+  customMessage String?
+
+  // Scheduling
+  scheduledAt  DateTime?
+  sentAt       DateTime?
+  completedAt  DateTime?
+
+  // Analytics (denormalized for performance)
+  totalRecipients Int   @default(0)
+  sentCount       Int   @default(0)
+  deliveredCount  Int   @default(0)
+  readCount       Int   @default(0)
+  repliedCount    Int   @default(0)
+  failedCount     Int   @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  recipients   CampaignRecipient[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model CampaignRecipient {
+  id          String   @id @default(cuid())
+  campaignId  String
+  contactId   String
+
+  // Individual status
+  status      String   @default("pending") // "pending", "sent", "delivered", "read", "replied", "failed"
+
+  // Twilio tracking
+  twilioSid   String?
+
+  // Timing
+  sentAt      DateTime?
+  deliveredAt DateTime?
+  readAt      DateTime?
+  repliedAt   DateTime?
+  failedAt    DateTime?
+  failureReason String?
+
+  // Variable values snapshot
+  variableValues Json?
+
+  // Relations
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contact     Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, contactId])
+  @@index([campaignId])
+  @@index([contactId])
+  @@index([status])
+}
+
+// ============ INTEGRATIONS ============
+
+model Integration {
+  id          String   @id @default(cuid())
+  tenantId    String
+
+  type        String   // "twilio", "whatsapp_business", "webhook"
+  name        String
+
+  // Connection status
+  status      String   @default("disconnected") // "connected", "disconnected", "error"
+  lastCheckedAt DateTime?
+  lastError   String?
+
+  // Encrypted credentials (stored securely)
+  credentials Json?    // { accountSid, authToken (encrypted), etc. }
+
+  // Configuration
+  config      Json?    // { webhookUrl, phoneNumber, etc. }
+
+  // Usage/Quota
+  usageThisMonth Int   @default(0)
+  usageLimit     Int?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, type])
+  @@index([tenantId])
 }
