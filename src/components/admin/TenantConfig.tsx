@@ -189,53 +189,53 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/admin">
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-800">
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
         <div className="flex items-center gap-3">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
             <Building2 className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{tenant.name}</h1>
-            <p className="text-gray-400">@{tenant.slug}</p>
+            <h1 className="text-2xl font-bold text-slate-800">{tenant.name}</h1>
+            <p className="text-slate-500">@{tenant.slug}</p>
           </div>
         </div>
       </div>
 
       {/* Stats Bar */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-gray-900/50 border-white/10">
+        <Card className="bg-white/60 backdrop-blur-sm border-white/50">
           <CardContent className="p-4 flex items-center gap-3">
-            <MessageSquare className="h-5 w-5 text-indigo-400" />
+            <MessageSquare className="h-5 w-5 text-indigo-500" />
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-slate-800">
                 {tenant._count.conversations}
               </p>
-              <p className="text-xs text-gray-500">Conversations</p>
+              <p className="text-xs text-slate-400">Conversations</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gray-900/50 border-white/10">
+        <Card className="bg-white/60 backdrop-blur-sm border-white/50">
           <CardContent className="p-4 flex items-center gap-3">
-            <Calendar className="h-5 w-5 text-green-400" />
+            <Calendar className="h-5 w-5 text-green-500" />
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-slate-800">
                 {tenant._count.bookings}
               </p>
-              <p className="text-xs text-gray-500">Bookings</p>
+              <p className="text-xs text-slate-400">Bookings</p>
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gray-900/50 border-white/10">
+        <Card className="bg-white/60 backdrop-blur-sm border-white/50">
           <CardContent className="p-4 flex items-center gap-3">
-            <UserCircle className="h-5 w-5 text-purple-400" />
+            <UserCircle className="h-5 w-5 text-purple-500" />
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-slate-800">
                 {tenant._count.contacts}
               </p>
-              <p className="text-xs text-gray-500">Contacts</p>
+              <p className="text-xs text-slate-400">Contacts</p>
             </div>
           </CardContent>
         </Card>
@@ -244,10 +244,10 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
       {/* Message */}
       {message && (
         <div
-          className={`p-4 rounded-lg flex items-center gap-2 ${
+          className={`p-4 rounded-xl flex items-center gap-2 ${
             message.type === "success"
-              ? "bg-green-500/20 text-green-400 border border-green-500/30"
-              : "bg-red-500/20 text-red-400 border border-red-500/30"
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : "bg-red-50 text-red-700 border border-red-200"
           }`}
         >
           {message.type === "success" ? (
@@ -260,7 +260,7 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-white/10 pb-2">
+      <div className="flex gap-2 border-b border-slate-200 pb-2">
         {tabs.map((tab) => (
           <Button
             key={tab.id}
@@ -268,8 +268,8 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
             onClick={() => setActiveTab(tab.id)}
             className={
               activeTab === tab.id
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "text-gray-400 hover:text-white"
+                ? "bg-slate-800 hover:bg-slate-900 text-white"
+                : "text-slate-500 hover:text-slate-800 hover:bg-white/50"
             }
           >
             <tab.icon className="h-4 w-4 mr-2" />
@@ -280,41 +280,41 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
 
       {/* Tab Content */}
       {activeTab === "general" && (
-        <Card className="bg-gray-900/50 border-white/10">
+        <Card className="bg-white/60 backdrop-blur-sm border-white/50">
           <CardHeader>
-            <CardTitle className="text-white">General Settings</CardTitle>
+            <CardTitle className="text-slate-800">General Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-gray-400">Tenant Name</Label>
+                <Label className="text-slate-600">Tenant Name</Label>
                 <Input
                   value={formData.name}
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-white/80 border-slate-200 text-slate-800"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-400">Business Name</Label>
+                <Label className="text-slate-600">Business Name</Label>
                 <Input
                   value={formData.businessName}
                   onChange={(e) =>
                     setFormData({ ...formData, businessName: e.target.value })
                   }
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-white/80 border-slate-200 text-slate-800"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-400">Business Type</Label>
+                <Label className="text-slate-600">Business Type</Label>
                 <Select
                   value={formData.businessType}
                   onValueChange={(v) =>
                     setFormData({ ...formData, businessType: v })
                   }
                 >
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectTrigger className="bg-white/80 border-slate-200 text-slate-800">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -326,12 +326,12 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-400">Plan</Label>
+                <Label className="text-slate-600">Plan</Label>
                 <Select
                   value={formData.plan}
                   onValueChange={(v) => setFormData({ ...formData, plan: v })}
                 >
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectTrigger className="bg-white/80 border-slate-200 text-slate-800">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -342,12 +342,12 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-400">Status</Label>
+                <Label className="text-slate-600">Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(v) => setFormData({ ...formData, status: v })}
                 >
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                  <SelectTrigger className="bg-white/80 border-slate-200 text-slate-800">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -359,70 +359,70 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-400">Timezone</Label>
+                <Label className="text-slate-600">Timezone</Label>
                 <Input
                   value={formData.timezone}
                   onChange={(e) =>
                     setFormData({ ...formData, timezone: e.target.value })
                   }
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-white/80 border-slate-200 text-slate-800"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-gray-400">Phone</Label>
+                <Label className="text-slate-600">Phone</Label>
                 <Input
                   value={formData.phone}
                   onChange={(e) =>
                     setFormData({ ...formData, phone: e.target.value })
                   }
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-white/80 border-slate-200 text-slate-800"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-400">Address</Label>
+                <Label className="text-slate-600">Address</Label>
                 <Input
                   value={formData.address}
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-white/80 border-slate-200 text-slate-800"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-gray-400">City</Label>
+                <Label className="text-slate-600">City</Label>
                 <Input
                   value={formData.city}
                   onChange={(e) =>
                     setFormData({ ...formData, city: e.target.value })
                   }
-                  className="bg-white/5 border-white/10 text-white"
+                  className="bg-white/80 border-slate-200 text-slate-800"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-400">Services (comma-separated)</Label>
+              <Label className="text-slate-600">Services (comma-separated)</Label>
               <Input
                 value={formData.services}
                 onChange={(e) =>
                   setFormData({ ...formData, services: e.target.value })
                 }
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-white/80 border-slate-200 text-slate-800"
                 placeholder="Service 1, Service 2, Service 3"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-gray-400">Pricing</Label>
+              <Label className="text-slate-600">Pricing</Label>
               <Textarea
                 value={formData.pricing}
                 onChange={(e) =>
                   setFormData({ ...formData, pricing: e.target.value })
                 }
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-white/80 border-slate-200 text-slate-800"
                 rows={3}
               />
             </div>
@@ -430,7 +430,7 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
             <Button
               onClick={handleSaveGeneral}
               disabled={saving}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-slate-800 hover:bg-slate-900 text-white"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -444,17 +444,17 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
       )}
 
       {activeTab === "twilio" && (
-        <Card className="bg-gray-900/50 border-white/10">
+        <Card className="bg-white/60 backdrop-blur-sm border-white/50">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white">Twilio / WhatsApp</CardTitle>
+              <CardTitle className="text-slate-800">Twilio / WhatsApp</CardTitle>
               {twilioIntegration?.status === "connected" ? (
-                <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm">
+                <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm border border-green-200">
                   <CheckCircle className="h-4 w-4" />
                   Connected
                 </span>
               ) : (
-                <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-500/20 text-gray-400 text-sm">
+                <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-sm border border-slate-200">
                   <XCircle className="h-4 w-4" />
                   Not Connected
                 </span>
@@ -463,36 +463,36 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-gray-400">Account SID</Label>
+              <Label className="text-slate-600">Account SID</Label>
               <Input
                 value={twilioData.accountSid}
                 onChange={(e) =>
                   setTwilioData({ ...twilioData, accountSid: e.target.value })
                 }
-                className="bg-white/5 border-white/10 text-white font-mono"
+                className="bg-white/80 border-slate-200 text-slate-800 font-mono"
                 placeholder="AC..."
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-400">Auth Token</Label>
+              <Label className="text-slate-600">Auth Token</Label>
               <Input
                 type="password"
                 value={twilioData.authToken}
                 onChange={(e) =>
                   setTwilioData({ ...twilioData, authToken: e.target.value })
                 }
-                className="bg-white/5 border-white/10 text-white font-mono"
+                className="bg-white/80 border-slate-200 text-slate-800 font-mono"
                 placeholder="Enter new token to update"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-gray-400">WhatsApp Number</Label>
+              <Label className="text-slate-600">WhatsApp Number</Label>
               <Input
                 value={twilioData.whatsappNumber}
                 onChange={(e) =>
                   setTwilioData({ ...twilioData, whatsappNumber: e.target.value })
                 }
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-white/80 border-slate-200 text-slate-800"
                 placeholder="+14155238886"
               />
             </div>
@@ -501,7 +501,7 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
               <Button
                 onClick={handleSaveTwilio}
                 disabled={saving}
-                className="bg-indigo-600 hover:bg-indigo-700"
+                className="bg-slate-800 hover:bg-slate-900 text-white"
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -514,7 +514,7 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
                 onClick={handleTestTwilio}
                 disabled={testing}
                 variant="outline"
-                className="border-white/10 text-gray-400 hover:text-white"
+                className="border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-white"
               >
                 {testing ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -525,16 +525,16 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
               </Button>
             </div>
 
-            <div className="mt-6 p-4 rounded-lg bg-white/5 border border-white/10">
-              <p className="text-sm text-gray-400">
-                <strong className="text-white">Webhook URL:</strong>
+            <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <p className="text-sm text-slate-600">
+                <strong className="text-slate-800">Webhook URL:</strong>
               </p>
-              <code className="text-sm text-indigo-400 block mt-1">
+              <code className="text-sm text-indigo-600 block mt-1">
                 {typeof window !== "undefined"
                   ? `${window.location.origin}/api/webhooks/twilio`
                   : "/api/webhooks/twilio"}
               </code>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-slate-400 mt-2">
                 Configure this URL in your Twilio WhatsApp Sandbox settings
               </p>
             </div>
@@ -543,9 +543,9 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
       )}
 
       {activeTab === "faqs" && (
-        <Card className="bg-gray-900/50 border-white/10">
+        <Card className="bg-white/60 backdrop-blur-sm border-white/50">
           <CardHeader>
-            <CardTitle className="text-white">
+            <CardTitle className="text-slate-800">
               FAQs ({tenant.faqs.length})
             </CardTitle>
           </CardHeader>
@@ -554,18 +554,18 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
               {tenant.faqs.map((faq) => (
                 <div
                   key={faq.id}
-                  className="p-4 rounded-lg bg-white/5 border border-white/10"
+                  className="p-4 rounded-xl bg-white/80 border border-slate-200"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="text-white font-medium">{faq.question}</p>
-                      <p className="text-gray-400 text-sm mt-1">{faq.answer}</p>
+                      <p className="text-slate-800 font-medium">{faq.question}</p>
+                      <p className="text-slate-500 text-sm mt-1">{faq.answer}</p>
                       {faq.keywords.length > 0 && (
                         <div className="flex gap-1 mt-2 flex-wrap">
                           {faq.keywords.map((kw, i) => (
                             <span
                               key={i}
-                              className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs"
+                              className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs"
                             >
                               {kw}
                             </span>
@@ -576,8 +576,8 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs ${
                         faq.isActive
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-gray-500/20 text-gray-400"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-slate-100 text-slate-500"
                       }`}
                     >
                       {faq.isActive ? "Active" : "Inactive"}
@@ -586,7 +586,7 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
                 </div>
               ))}
               {tenant.faqs.length === 0 && (
-                <p className="text-center text-gray-500 py-8">No FAQs configured</p>
+                <p className="text-center text-slate-400 py-8">No FAQs configured</p>
               )}
             </div>
           </CardContent>
@@ -594,9 +594,9 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
       )}
 
       {activeTab === "users" && (
-        <Card className="bg-gray-900/50 border-white/10">
+        <Card className="bg-white/60 backdrop-blur-sm border-white/50">
           <CardHeader>
-            <CardTitle className="text-white">
+            <CardTitle className="text-slate-800">
               Users ({tenant.users.length})
             </CardTitle>
           </CardHeader>
@@ -605,28 +605,28 @@ export function TenantConfig({ tenant }: { tenant: Tenant }) {
               {tenant.users.map((user) => (
                 <div
                   key={user.id}
-                  className="p-4 rounded-lg bg-white/5 border border-white/10 flex items-center justify-between"
+                  className="p-4 rounded-xl bg-white/80 border border-slate-200 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center">
                       <span className="text-white font-medium">
                         {(user.name || user.email).charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <p className="text-white font-medium">
+                      <p className="text-slate-800 font-medium">
                         {user.name || "No name"}
                       </p>
-                      <p className="text-gray-500 text-sm">{user.email}</p>
+                      <p className="text-slate-400 text-sm">{user.email}</p>
                     </div>
                   </div>
-                  <span className="px-2 py-1 rounded-full bg-indigo-500/20 text-indigo-400 text-xs uppercase">
+                  <span className="px-2 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs uppercase">
                     {user.role}
                   </span>
                 </div>
               ))}
               {tenant.users.length === 0 && (
-                <p className="text-center text-gray-500 py-8">No users</p>
+                <p className="text-center text-slate-400 py-8">No users</p>
               )}
             </div>
           </CardContent>

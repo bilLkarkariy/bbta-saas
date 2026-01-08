@@ -9,8 +9,9 @@ import { Menu, X } from "lucide-react";
 
 const navItems = [
     { name: "Fonctionnalités", href: "#features" },
-    { name: "Tarifs", href: "#pricing" },
-    { name: "À propos", href: "#about" },
+    { name: "ROI", href: "#roi" },
+    { name: "Sécurité", href: "#security" },
+    { name: "Déploiement", href: "#deployment" },
 ];
 
 export function SiteHeader() {
@@ -64,7 +65,7 @@ export function SiteHeader() {
                         <Link href="/sign-in">Connexion</Link>
                     </Button>
                     <Button size="sm" className="bg-primary hover:bg-primary/90 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)]" asChild>
-                        <Link href="/sign-up">Essai Gratuit</Link>
+                        <Link href="/sign-up">Auditer mes achats</Link>
                     </Button>
                 </div>
 
@@ -108,7 +109,7 @@ export function SiteHeader() {
                                     <Link href="/sign-in">Connexion</Link>
                                 </Button>
                                 <Button className="bg-primary text-white" asChild>
-                                    <Link href="/sign-up">Essai Gratuit</Link>
+                                    <Link href="/sign-up">Auditer mes achats</Link>
                                 </Button>
                             </div>
                         </div>

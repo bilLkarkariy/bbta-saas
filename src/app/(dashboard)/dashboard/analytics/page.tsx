@@ -13,13 +13,13 @@ import { getCurrentTenant } from "@/lib/auth";
 import {
   getDashboardMetrics,
   getConversationsTrend,
-  getAITierBreakdown,
+  getConversationsByIntent,
   getAgentPerformance,
 } from "@/lib/analytics/queries";
 import {
   AnalyticsCard,
   LazyConversationChart,
-  LazyAIUsageChart,
+  LazyConversationBreakdown,
   AgentLeaderboard,
 } from "@/components/dashboard/analytics";
 import { ExportButton } from "@/components/dashboard/analytics/ExportButton";
@@ -28,11 +28,11 @@ export default async function AnalyticsPage() {
   const { tenant } = await getCurrentTenant();
 
   // Fetch all analytics data in parallel
-  const [metrics, conversationsTrend, aiUsage, agentPerformance] =
+  const [metrics, conversationsTrend, intentDistribution, agentPerformance] =
     await Promise.all([
       getDashboardMetrics(tenant.id),
       getConversationsTrend(tenant.id, 30),
-      getAITierBreakdown(tenant.id),
+      getConversationsByIntent(tenant.id),
       getAgentPerformance(tenant.id),
     ]);
 
@@ -96,7 +96,11 @@ export default async function AnalyticsPage() {
           data={conversationsTrend}
           title="Nouvelles Conversations"
         />
-        <LazyAIUsageChart data={aiUsage} />
+        <LazyConversationBreakdown
+          data={intentDistribution}
+          type="intent"
+          title="Répartition des Demandes"
+        />
       </div>
 
       {/* Additional Metrics */}

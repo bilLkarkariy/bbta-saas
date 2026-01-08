@@ -65,6 +65,7 @@ export async function isSuperAdmin(): Promise<boolean> {
 // Require super admin access - throws if not super admin
 export async function requireSuperAdmin() {
   const { userId } = await auth();
+
   if (!userId) {
     throw new Error("Unauthorized");
   }

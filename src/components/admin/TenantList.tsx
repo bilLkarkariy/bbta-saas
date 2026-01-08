@@ -51,24 +51,24 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case "enterprise":
-        return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+        return "bg-purple-100 text-purple-700 border-purple-200";
       case "pro":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+        return "bg-blue-100 text-blue-700 border-blue-200";
       default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+        return "bg-slate-100 text-slate-600 border-slate-200";
     }
   };
 
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case "active":
-        return "bg-green-500/20 text-green-400 border-green-500/30";
+        return "bg-green-100 text-green-700 border-green-200";
       case "trial":
-        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+        return "bg-amber-100 text-amber-700 border-amber-200";
       case "suspended":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
+        return "bg-red-100 text-red-700 border-red-200";
       default:
-        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+        return "bg-slate-100 text-slate-600 border-slate-200";
     }
   };
 
@@ -84,8 +84,8 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
             onClick={() => setFilter(f)}
             className={
               filter === f
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "border-white/10 text-gray-400 hover:text-white"
+                ? "bg-slate-800 hover:bg-slate-900 text-white"
+                : "border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-white/50"
             }
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -103,19 +103,19 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
           return (
             <Card
               key={tenant.id}
-              className="bg-gray-900/50 border-white/10 hover:border-white/20 transition-colors"
+              className="bg-white/60 backdrop-blur-sm border-white/50 hover:border-slate-200 hover:shadow-lg transition-all duration-200"
             >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
                       <Building2 className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <CardTitle className="text-white text-base">
+                      <CardTitle className="text-slate-800 text-base">
                         {tenant.name}
                       </CardTitle>
-                      <p className="text-xs text-gray-500">@{tenant.slug}</p>
+                      <p className="text-xs text-slate-400">@{tenant.slug}</p>
                     </div>
                   </div>
                   <div className="flex gap-1">
@@ -138,10 +138,10 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Business Info */}
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-slate-500">
                   <span className="capitalize">{tenant.businessType}</span>
                   {tenant.businessName && (
-                    <span className="block text-gray-500 truncate">
+                    <span className="block text-slate-400 truncate">
                       {tenant.businessName}
                     </span>
                   )}
@@ -149,44 +149,44 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
 
                 {/* Stats */}
                 <div className="grid grid-cols-4 gap-2 text-center">
-                  <div className="p-2 rounded-lg bg-white/5">
-                    <Users className="h-4 w-4 mx-auto text-gray-500 mb-1" />
-                    <span className="text-white text-sm font-medium">
+                  <div className="p-2 rounded-lg bg-slate-50/80">
+                    <Users className="h-4 w-4 mx-auto text-slate-400 mb-1" />
+                    <span className="text-slate-700 text-sm font-medium">
                       {tenant._count.users}
                     </span>
                   </div>
-                  <div className="p-2 rounded-lg bg-white/5">
-                    <MessageSquare className="h-4 w-4 mx-auto text-gray-500 mb-1" />
-                    <span className="text-white text-sm font-medium">
+                  <div className="p-2 rounded-lg bg-slate-50/80">
+                    <MessageSquare className="h-4 w-4 mx-auto text-slate-400 mb-1" />
+                    <span className="text-slate-700 text-sm font-medium">
                       {tenant._count.conversations}
                     </span>
                   </div>
-                  <div className="p-2 rounded-lg bg-white/5">
-                    <HelpCircle className="h-4 w-4 mx-auto text-gray-500 mb-1" />
-                    <span className="text-white text-sm font-medium">
+                  <div className="p-2 rounded-lg bg-slate-50/80">
+                    <HelpCircle className="h-4 w-4 mx-auto text-slate-400 mb-1" />
+                    <span className="text-slate-700 text-sm font-medium">
                       {tenant._count.faqs}
                     </span>
                   </div>
-                  <div className="p-2 rounded-lg bg-white/5">
-                    <Calendar className="h-4 w-4 mx-auto text-gray-500 mb-1" />
-                    <span className="text-white text-sm font-medium">
+                  <div className="p-2 rounded-lg bg-slate-50/80">
+                    <Calendar className="h-4 w-4 mx-auto text-slate-400 mb-1" />
+                    <span className="text-slate-700 text-sm font-medium">
                       {tenant._count.bookings}
                     </span>
                   </div>
                 </div>
 
                 {/* WhatsApp Status */}
-                <div className="flex items-center justify-between p-2 rounded-lg bg-white/5">
+                <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50/80">
                   <div className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-gray-500" />
-                    <span className="text-sm text-gray-400">
+                    <Phone className="h-4 w-4 text-slate-400" />
+                    <span className="text-sm text-slate-500">
                       {tenant.whatsappNumber || "Not configured"}
                     </span>
                   </div>
                   {twilioConnected ? (
-                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <CheckCircle className="h-4 w-4 text-green-500" />
                   ) : (
-                    <XCircle className="h-4 w-4 text-gray-500" />
+                    <XCircle className="h-4 w-4 text-slate-300" />
                   )}
                 </div>
 
@@ -196,7 +196,7 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full border-white/10 text-gray-400 hover:text-white"
+                      className="w-full border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-white"
                     >
                       <Settings className="h-4 w-4 mr-2" />
                       Configure
@@ -209,7 +209,7 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full border-indigo-500/30 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10"
+                      className="w-full border-indigo-200 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       View As
@@ -223,7 +223,7 @@ export function TenantList({ tenants }: { tenants: TenantWithCounts[] }) {
       </div>
 
       {filteredTenants.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
+        <div className="text-center py-12 text-slate-400">
           No tenants found matching your filter.
         </div>
       )}

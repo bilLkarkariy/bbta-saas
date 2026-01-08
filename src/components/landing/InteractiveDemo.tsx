@@ -14,20 +14,20 @@ interface Step {
 const steps = [
     {
         id: 1,
-        title: "Connectez votre WhatsApp",
-        description: "Scannez le code QR pour lier instantanément votre compte WhatsApp Business. Sans code, sans friction.",
+        title: "Connexion (Jours 1-5)",
+        description: "Connexion sécurisée à vos boîtes mails facturation, Drive et outils bancaires. Analyse de l'historique pour détecter les récurrences.",
         icon: QrCode,
     },
     {
         id: 2,
-        title: "Configurez votre Agent IA",
-        description: "Importez vos FAQs et définissez votre identité de marque. Votre agent est prêt à vendre en moins de 5 minutes.",
+        title: "Règles de Gestion (Jours 6-15)",
+        description: "Définition des seuils : Qui valide quoi ? À partir de quel montant ? Quels écarts de prix sont tolérés ?",
         icon: Settings,
     },
     {
         id: 3,
-        title: "Suivez votre Croissance",
-        description: "Visualisez les conversions et l&apos;augmentation de votre chiffre d&apos;affaires en temps réel sur votre dashboard.",
+        title: "Pilotage Automatique (Jours 16+)",
+        description: "L'IA intercepte, contrôle et prépare. Vous ne gérez plus que les exceptions et le clic final de paiement.",
         icon: DollarSign,
     },
 ];
@@ -52,10 +52,10 @@ export function InteractiveDemo() {
                         <div className="sticky top-32 space-y-12">
                             <div className="mb-12">
                                 <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4 text-white">
-                                    Prêt en quelques clics.
+                                    PAS DE PROJET IT COMPLEXE. JUSTE DES RÉSULTATS.
                                 </h2>
                                 <p className="text-lg text-muted-foreground leading-relaxed">
-                                    Nous avons conçu Lumelia pour être assez puissant pour l&apos;entreprise, mais assez simple pour tout le monde.
+                                    Compatible avec votre banque, vos mails et votre expert-comptable.
                                 </p>
                             </div>
 
@@ -120,48 +120,58 @@ function Visuals({ index }: { index: MotionValue<number> }) {
     return (
         <div className="relative w-full h-full flex items-center justify-center">
 
-            {/* Slide 1: QR Code */}
+            {/* Slide 1: Connection */}
             <motion.div style={{ opacity: opacity1, scale: scale1 }} className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <div className="w-56 h-56 bg-white p-6 rounded-2xl mb-8 shadow-[0_0_60px_rgba(255,255,255,0.1)] relative group">
-                    <QrCode className="w-full h-full text-black" />
-                    <div className="absolute inset-0 bg-primary/20 animate-pulse rounded-2xl" />
+                <div className="w-56 h-56 bg-white p-6 rounded-2xl mb-8 shadow-[0_0_60px_rgba(255,255,255,0.1)] relative group flex items-center justify-center">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="w-16 h-16 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 shadow-sm">
+                            <span className="text-blue-600 font-bold">@</span>
+                        </div>
+                        <div className="w-16 h-16 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100 shadow-sm">
+                            <span className="text-emerald-600 font-bold">€</span>
+                        </div>
+                        <div className="w-16 h-16 rounded-xl bg-purple-50 flex items-center justify-center border border-purple-100 shadow-sm">
+                            <span className="text-purple-600 font-bold">📂</span>
+                        </div>
+                        <div className="w-16 h-16 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100 shadow-sm">
+                            <span className="text-amber-600 font-bold">🏦</span>
+                        </div>
+                    </div>
                 </div>
-                <h4 className="text-2xl font-bold text-white">Scannez pour Connecter</h4>
+                <h4 className="text-2xl font-bold text-white">Flux Sécurisés</h4>
                 <div className="mt-6 flex items-center gap-3 text-emerald-400 bg-emerald-400/10 px-4 py-2 rounded-full border border-emerald-400/20">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-[11px] font-mono font-black tracking-widest uppercase">EN ATTENTE DE CONNEXION...</span>
+                    <span className="text-[11px] font-mono font-black tracking-widest uppercase">SYNCHRONISATION EN COURS...</span>
                 </div>
             </motion.div>
 
-            {/* Slide 2: AI Config */}
+            {/* Slide 2: Rules Config */}
             <motion.div style={{ opacity: opacity2, scale: scale2 }} className="absolute inset-0 flex flex-col items-center justify-center">
                 <div className="w-full max-w-sm space-y-6">
                     <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="font-bold text-white">Réponses Automatiques</span>
-                            <div className="w-12 h-6 rounded-full bg-primary p-1 flex justify-end">
-                                <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/30" />
-                            </div>
+                            <span className="font-bold text-white">Seuil de Validation</span>
+                            <div className="text-primary text-sm font-black tracking-widest px-2 py-1 bg-primary/10 rounded">&gt; 500€</div>
                         </div>
-                        <p className="text-xs text-muted-foreground">Activé pour toutes les FAQs importées.</p>
+                        <p className="text-xs text-muted-foreground">Approbation DG requise automatiquement.</p>
                     </div>
 
                     <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="font-bold text-white">Ton de Voix</span>
-                            <span className="text-primary text-sm font-black uppercase tracking-widest px-2 py-1 bg-primary/10 rounded">B2B Premium</span>
+                            <span className="font-bold text-white">Écart de Prix Toléré</span>
+                            <span className="text-emerald-400 text-sm font-black uppercase tracking-widest px-2 py-1 bg-emerald-400/10 rounded">2% Max</span>
                         </div>
-                        <p className="text-xs text-muted-foreground">Style formel, poli et orienté solution.</p>
+                        <p className="text-xs text-muted-foreground">Alerte immédiate si &gt; 2% vs Devis.</p>
                     </div>
 
                     <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="font-bold text-white">Boost des Ventes</span>
+                            <span className="font-bold text-white">Catégorisation Analytique</span>
                             <div className="w-12 h-6 rounded-full bg-emerald-500 p-1 flex justify-end">
                                 <div className="w-4 h-4 rounded-full bg-white shadow-lg shadow-white/30" />
                             </div>
                         </div>
-                        <p className="text-xs text-muted-foreground">Proposition de démo après 3 messages.</p>
+                        <p className="text-xs text-muted-foreground">Imputation automatique par dossier.</p>
                     </div>
                 </div>
             </motion.div>
@@ -174,9 +184,9 @@ function Visuals({ index }: { index: MotionValue<number> }) {
                         whileInView={{ scale: 1, opacity: 1 }}
                         className="text-8xl font-black bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-blue-500 to-purple-600 mb-4 tracking-tighter"
                     >
-                        +127%
+                        -80%
                     </motion.div>
-                    <p className="text-xl font-bold text-white mb-12">Augmentation du Revenu</p>
+                    <p className="text-xl font-bold text-white mb-12">Temps de Traitement Admin</p>
 
                     {/* Simulated Graph */}
                     <div className="flex items-end gap-3 h-40">

@@ -15,9 +15,9 @@ interface Feature {
 
 const features = [
     {
-        title: "Automatisation IA",
-        description: "Répondez aux questions répétitives en moins de 60 secondes. Libérez votre équipe pour les ventes stratégiques.",
-        icon: IconZapAnimated,
+        title: "Le 3-Way Match (Contrôle Prix)",
+        description: "L'IA lit la facture et la compare au Devis/Bon de Commande. Écart de prix ? Quantité non livrée ? Doublon ? Alerte avant paiement.",
+        icon: IconShieldAnimated,
         className: "md:col-span-2 md:row-span-2 bg-primary/10 border-primary/20",
         visual: (
             <div className="mt-8 flex items-end gap-2 h-32">
@@ -34,39 +34,39 @@ const features = [
         )
     },
     {
-        title: "Sécurité de Grade Bancaire",
-        description: "Chiffrement AES-256 et conformité RGPD native pour protéger les données de vos clients.",
-        icon: IconShieldAnimated,
+        title: "Workflow de Validation",
+        description: "L'Agent identifie l'acheteur, lui envoie la notif de validation, et relance si besoin. Le DAF ne reçoit que ce qui est validé.",
+        icon: IconZapAnimated,
         className: "md:col-span-1 md:row-span-1 bg-emerald-500/5 border-emerald-500/10",
     },
     {
-        title: "Sync CRM Intégrée",
-        description: "Directement connecté à Salesforce, HubSpot et Pipedrive.",
+        title: "Préparation Comptable",
+        description: "Lecture OCR, imputation analytique, nommage des fichiers. Export parfait prêt à importer dans votre logiciel.",
         icon: IconUsersAnimated,
         className: "md:col-span-1 md:row-span-1 bg-blue-500/5 border-blue-500/10",
     },
     {
-        title: "Scalabilité Globale",
-        description: "Gérez des milliers de conversations simultanées sans aucune latence.",
+        title: "Alerte Trésorerie",
+        description: "Vision claire des factures engagées mais non payées. Vous savez exactement combien va sortir à la fin du mois.",
         icon: IconGlobeAnimated,
         className: "md:col-span-1 md:row-span-1 bg-purple-500/5 border-purple-500/10",
     },
     {
-        title: "Précision Chirurgicale",
-        description: "Notre moteur NLP comprend les intentions, pas seulement les mots-clés.",
+        title: "Contrôle Continu 24/7",
+        description: "L'IA ne se fatigue jamais. Chaque centime est audité en temps réel sans erreur humaine.",
         icon: IconCpuAnimated,
         className: "md:col-span-2 md:row-span-1 bg-white/5 border-white/10",
         visual: (
             <div className="mt-4 flex flex-col gap-2">
                 <div className="flex justify-between text-xs font-mono text-muted-foreground">
-                    <span>Analyse Sémantique</span>
-                    <span className="text-emerald-400">99.8% Confiance</span>
+                    <span>Audit de Conformité</span>
+                    <span className="text-emerald-400">100% Précision</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                     <motion.div
                         className="h-full bg-emerald-500"
                         initial={{ width: 0 }}
-                        whileInView={{ width: "99.8%" }}
+                        whileInView={{ width: "100%" }}
                         transition={{ duration: 1, delay: 0.5 }}
                     />
                 </div>
@@ -153,10 +153,10 @@ export function FeatureBento() {
             <div className="container px-4 mx-auto max-w-7xl">
                 <div className="mb-20 text-center">
                     <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4 text-white">
-                        Tout ce qu&apos;il vous faut pour closer.
+                        IL CONTRÔLE. IL VALIDE. IL PRÉPARE.
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Des outils conçus pour la performance, la sécurité et surtout, votre croissance.
+                        Votre expert-comptable fait le bilan. Lumelia fait le ménage avant.
                     </p>
                 </div>
 

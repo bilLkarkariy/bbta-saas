@@ -35,9 +35,9 @@ const plans = [
 ];
 
 const faqs = [
-    { q: "Puis-je changer de plan à tout moment ?", a: "Oui, vous pouvez upgrader ou downgrader votre abonnement à tout moment depuis votre dashboard. La différence sera calculée au prorata." },
-    { q: "Avez-vous besoin de mes accès WhatsApp ?", a: "Non, nous utilisons l'API officielle via un QR Code sécurisé. Nous n'avons jamais accès à vos messages personnels." },
-    { q: "Comment fonctionne l'essai gratuit ?", a: "Vous bénéficiez de 14 jours complets pour tester toutes les fonctionnalités Pro, sans avoir à saisir de carte bancaire." },
+    { q: "Mon expert-comptable fait déjà la saisie. À quoi ça sert ?", a: "L&apos;expert-comptable enregistre le passé pour le fisc. Lumelia contrôle le présent pour votre trésorerie. Nous intervenons avant l&apos;envoi au comptable pour vérifier que vous ne payez pas trop cher et que tout est validé." },
+    { q: "Est-ce sécurisé ? Avez-vous accès à mes comptes bancaires ?", a: "Nous avons un accès en lecture seule ou en préparation de virement. Vous gardez toujours le contrôle final du paiement (validation bancaire). Sécurité AES-256 et conformité RGPD." },
+    { q: "Nous utilisons un vieux logiciel (EBP, Sage, Ciel). C&apos;est compatible ?", a: "Oui. Lumelia agit en amont. Nous générons des fichiers d&apos;export (FEC ou CSV) que votre comptable peut importer dans n&apos;importe quel logiciel, même le plus ancien." },
 ];
 
 export function PricingSection() {

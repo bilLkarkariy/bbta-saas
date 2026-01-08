@@ -9,6 +9,8 @@ import { ProblemSolution } from "@/components/landing/ProblemSolution";
 import { InteractiveDemo } from "@/components/landing/InteractiveDemo";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { Testimonials } from "@/components/landing/Testimonials";
+import { StatsSection } from "@/components/landing/StatsSection";
+import { FounderVision } from "@/components/landing/FounderVision";
 
 export default function LandingPage() {
   return (
@@ -19,7 +21,9 @@ export default function LandingPage() {
         <SocialProof />
         <ProblemSolution />
         <FeatureBento />
+        <StatsSection />
         <InteractiveDemo />
+        <FounderVision />
         <Testimonials />
         <PricingSection />
         <SiteFooter />

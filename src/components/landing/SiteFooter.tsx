@@ -67,7 +67,7 @@ export function SiteFooter() {
                             </span>
                         </Link>
                         <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-                            La plateforme d&apos;automatisation intelligente pour les entreprises qui veulent scaler leur communication WhatsApp.
+                            Le copilote financier des PME. Contrôle des achats automatisé.
                         </p>
                         <div className="flex gap-4">
                             <Link href="#" className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white transition-all">
@@ -102,8 +102,8 @@ export function SiteFooter() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 py-12 border-y border-white/5 items-center">
                     <div>
-                        <h4 className="text-lg font-bold text-white mb-2">Restez à jour</h4>
-                        <p className="text-muted-foreground text-sm mb-4">Recevez nos dernières mises à jour et conseils d&apos;IA.</p>
+                        <h4 className="text-lg font-bold text-white mb-2">Sécurisez vos achats</h4>
+                        <p className="text-muted-foreground text-sm mb-4">Tips contrôle de gestion & économies pour PME.</p>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-sm">
                             <div className="flex gap-2">
                                 <input
@@ -147,7 +147,7 @@ export function SiteFooter() {
 
                 {/* Bottom Bar */}
                 <div className="pt-12 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-muted-foreground">
-                    <p>© {new Date().getFullYear()} Lumelia SaaS. Fait avec passion pour les entreprises modernes.</p>
+                    <p>© {new Date().getFullYear()} Lumelia SaaS. Architected in France. Compatible avec tous les cabinets comptables.</p>
                     <div className="flex items-center gap-6">
                         <span className="flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />

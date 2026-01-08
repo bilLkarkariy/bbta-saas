@@ -44,5 +44,10 @@
       "permanent": true
     }
   ],
-  "crons": []
+  "crons": [
+    {
+      "path": "/api/cron/booking-reminders",
+      "schedule": "0 18 * * *"
+    }
+  ]
 }

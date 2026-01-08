@@ -30,6 +30,7 @@ model Tenant {
 
   // Business info
   phone         String?
+  ownerPhone    String?  // Owner's phone for notifications
   address       String?
   city          String?
   timezone      String   @default("Europe/Paris") // Timezone for date/time parsing
@@ -273,6 +274,7 @@ model Booking {
   // Additional info
   notes          String?
   reminderSent   Boolean  @default(false)
+  reminderSentAt DateTime?
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

@@ -13,43 +13,43 @@ interface CardItem {
 
 const problems = [
     {
-        title: "Délai de Réponse Interminable",
-        description: "En B2B, répondre en 5 minutes vs 30 minutes divise vos chances de conversion par 21.",
-        icon: Clock,
-        stats: "Jusqu'à 12h d'attente",
-    },
-    {
-        title: "Leads Qualifiés Perdus",
-        description: "Vos commerciaux passent 80% de leu temps à trier des curieux au lieu de closer des décideurs.",
+        title: "AVEUGLEMENT FINANCIER",
+        description: "Vous payez 500€ une prestation devisée à 450€. Personne n'a le temps de vérifier. C'est 3% de marge perdue.",
         icon: AlertTriangle,
-        stats: "73% de leads non-traités",
+        stats: "3% de marge perdue",
     },
     {
-        title: "Communication Fragmentée",
-        description: "Les informations sont éparpillées entre WhatsApp, emails et CRM. Personne n'a la vue d'ensemble.",
+        title: "GOULET D'ÉTRANGLEMENT",
+        description: "Votre assistante court après les managers pour obtenir un 'Bon à Payer'. Les factures s'empilent.",
+        icon: Clock,
+        stats: "Factures en attente",
+    },
+    {
+        title: "CHAOS COMPTABLE",
+        description: "Envoi des pièces en vrac le 15 du mois à l'expert-comptable. Résultat : pas de visibilité trésorerie.",
         icon: Frown,
-        stats: "Zéro visibilité ROI",
+        stats: "Visibilité nulle",
     }
 ];
 
 const solutions = [
     {
-        title: "Réponse Instantanée 24/7",
-        description: "L'IA engage la conversation en moins de 10 secondes, qualifie le besoin et propose un rendez-vous.",
+        title: "LE '3-WAY MATCH'",
+        description: "L'IA lit la facture et la compare au Devis/Bon de Commande. Écart de prix ? Alerte immédiate.",
         icon: Zap,
-        stats: "Réponse < 10s",
+        stats: "0% de surfacturation",
     },
     {
-        title: "Qualification Chirurgicale",
-        description: "L'agent extrait les données clés (budget, poste, besoin) et les injecte directement dans votre CRM.",
+        title: "WORKFLOW AUTOMATIQUE",
+        description: "L'Agent identifie l'acheteur, envoie la notif de validation, et relance si besoin. Gain de temps massif.",
         icon: Target,
-        stats: "Leads 100% qualifiés",
+        stats: "-80% temps de traitement",
     },
     {
-        title: "Dashboard Centralisé",
-        description: "Une vue unifiée sur toutes vos automatisations, vos taux de conversion et votre CA généré.",
+        title: "PRÉPARATION COMPTABLE",
+        description: "Lecture OCR, imputation analytique, export parfait. Votre expert-comptable reçoit des données propres.",
         icon: BarChart3,
-        stats: "ROI mesurable en €",
+        stats: "Relation Expert fluide",
     }
 ];
 
@@ -135,10 +135,10 @@ export function ProblemSolution() {
                 {/* Header */}
                 <div className="text-center mb-24">
                     <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6 text-white italic">
-                        L&apos;Ancien Monde vs <span className="text-emerald-400 not-italic">Lumelia</span>
+                        LA RÉALITÉ DE VOTRE <span className="text-primary not-italic">GESTION FOURNISSEURS</span>
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Ne laissez plus la friction opérationnelle tuer votre croissance. Passez du chaos à la précision chirurgicale.
+                        1 semaine/mois perdue en administratif & 3% de marge érodée. Reprenez le contrôle avec Lumelia.
                     </p>
                 </div>
 
@@ -148,7 +148,7 @@ export function ProblemSolution() {
                     <div className="space-y-12">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent to-red-500/20" />
-                            <span className="text-red-400 font-mono text-xs font-black tracking-[0.3em] uppercase">L&apos;Ancienne Méthode</span>
+                            <span className="text-red-400 font-mono text-xs font-black tracking-[0.3em] uppercase">SANS LUMELIA</span>
                             <div className="h-0.5 w-12 bg-red-500/20" />
                         </div>
                         <div className="grid gap-6">
@@ -162,7 +162,7 @@ export function ProblemSolution() {
                     <div className="space-y-12">
                         <div className="flex items-center gap-4 mb-4">
                             <div className="h-0.5 w-12 bg-emerald-500/20" />
-                            <span className="text-emerald-400 font-mono text-xs font-black tracking-[0.3em] uppercase">La Méthode Lumelia</span>
+                            <span className="text-emerald-400 font-mono text-xs font-black tracking-[0.3em] uppercase">AVEC LUMELIA</span>
                             <div className="h-0.5 flex-1 bg-gradient-to-l from-transparent to-emerald-500/20" />
                         </div>
                         <div className="grid gap-6">

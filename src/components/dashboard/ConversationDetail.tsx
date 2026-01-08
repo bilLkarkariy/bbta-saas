@@ -15,16 +15,15 @@ import {
   CheckCheck,
   Check,
   AlertCircle,
-  ArrowLeft,
   Mail,
   Target,
   Bot,
   MessageSquare,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { InternalNotes } from "./inbox/InternalNotes";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
 
 // Sanitize user-generated content to prevent XSS
 function sanitizeContent(content: string): string {
@@ -186,15 +185,15 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "sent":
-        return <Check className="h-3 w-3 text-muted-foreground" />;
+        return <Check className="h-3 w-3" />;
       case "delivered":
-        return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
+        return <CheckCheck className="h-3 w-3" />;
       case "read":
-        return <CheckCheck className="h-3 w-3 text-blue-500" />;
+        return <CheckCheck className="h-3 w-3 text-primary" />;
       case "failed":
-        return <AlertCircle className="h-3 w-3 text-red-500" />;
+        return <AlertCircle className="h-3 w-3 text-destructive" />;
       default:
-        return <Clock className="h-3 w-3 text-muted-foreground" />;
+        return <Clock className="h-3 w-3" />;
     }
   };
 
@@ -223,30 +222,56 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
     .join("")
     .toUpperCase() || "?";
 
+  // Format timestamp
+  const formatMessageTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+    if (diffInHours < 24) {
+      return date.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+    return date.toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-4 p-6">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 h-full overflow-hidden">
       {/* Messages Panel */}
-      <Card className="flex-1 flex flex-col">
-        <CardHeader className="border-b py-3">
+      <Card className="flex flex-col overflow-hidden animate-fade-up stagger-1 h-full card-premium shadow-layered">
+        {/* Conversation Header */}
+        <CardHeader className="border-b border-border/50 px-6 py-4 bg-gradient-to-b from-background/50 to-transparent backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/dashboard/conversations">
-                <Button variant="ghost" size="icon" className="shrink-0">
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Avatar>
-                <AvatarFallback>{initials}</AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-base">
-                  {conversation.customerName || conversation.customerPhone}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Phone className="h-3 w-3" />
+              <div className="flex items-center gap-2 bg-muted/30 rounded-full px-3 py-1.5 border border-border/50">
+                <Phone className="h-3.5 w-3.5 text-primary" />
+                <p className="text-sm font-medium text-foreground">
                   {conversation.customerPhone}
                 </p>
               </div>
+              {conversation.leadScore !== null && conversation.leadScore !== undefined && (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-[10px] h-6 px-2.5 font-semibold shadow-sm",
+                    conversation.leadScore >= 70
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200/60"
+                      : conversation.leadScore >= 40
+                        ? "bg-amber-50 text-amber-700 border-amber-200/60"
+                        : "bg-slate-50 text-slate-600 border-slate-200/60"
+                  )}
+                >
+                  <Target className="h-2.5 w-2.5 mr-1" />
+                  Score: {conversation.leadScore}
+                </Badge>
+              )}
             </div>
             <Badge
               variant={
@@ -256,117 +281,133 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
                     ? "destructive"
                     : "secondary"
               }
+              className="font-semibold px-4 py-1.5 shadow-sm"
             >
-              {conversation.status}
+              {conversation.status === "active" ? "Active" : conversation.status === "escalated" ? "Escaladée" : "Résolue"}
             </Badge>
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Messages Area */}
+        <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin space-y-6 bg-gradient-to-b from-muted/5 to-transparent">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-              <MessageSquare className="h-12 w-12 mb-3" />
-              <p>Aucun message pour le moment</p>
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground animate-fade-in">
+              <div className="relative mb-4">
+                <div className="absolute inset-0 bg-primary/10 blur-3xl rounded-full" />
+                <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-full p-6 border border-primary/20">
+                  <MessageSquare className="h-12 w-12 text-primary/60" />
+                </div>
+              </div>
+              <p className="text-lg font-semibold tracking-tight">Aucun message</p>
+              <p className="text-sm text-muted-foreground/70">La conversation commence ici</p>
             </div>
           ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  "flex",
-                  message.direction === "outbound" ? "justify-end" : "justify-start"
-                )}
-              >
+            <>
+              {messages.map((message, index) => (
                 <div
+                  key={message.id}
                   className={cn(
-                    "max-w-[70%] rounded-2xl px-4 py-2 space-y-1",
-                    message.direction === "outbound"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
+                    "flex animate-fade-up",
+                    message.direction === "outbound" ? "justify-end" : "justify-start"
                   )}
+                  style={{ animationDelay: `${index <= 7 ? index * 40 : 300}ms` }}
                 >
-                  <p
-                      className="text-sm whitespace-pre-wrap"
+                  <div
+                    className={cn(
+                      "max-w-[75%] rounded-2xl px-5 py-3.5 space-y-2 transition-all duration-300 hover:scale-[1.01]",
+                      message.direction === "outbound"
+                        ? "bg-gradient-to-br from-primary via-primary to-primary/95 text-primary-foreground glow-primary"
+                        : "card-premium hover:shadow-layered-lg bg-gradient-to-br from-card to-muted/5"
+                    )}
+                  >
+                    <p
+                      className={cn(
+                        "text-sm leading-relaxed whitespace-pre-wrap",
+                        message.direction === "inbound" && "text-slate-700"
+                      )}
                       dangerouslySetInnerHTML={{ __html: sanitizeContent(message.content) }}
                     />
 
-                  {/* Message metadata */}
-                  <div
-                    className={cn(
-                      "flex items-center gap-2 text-[10px]",
-                      message.direction === "outbound" ? "justify-end" : "justify-start"
-                    )}
-                  >
-                    <span className="opacity-70">
-                      {new Date(message.createdAt).toLocaleTimeString("fr-FR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
+                    {/* Message metadata */}
+                    <div
+                      className={cn(
+                        "flex items-center gap-2 text-[11px] font-medium",
+                        message.direction === "outbound" ? "justify-end text-white/70" : "justify-start text-slate-500"
+                      )}
+                    >
+                      <span>{formatMessageTime(message.createdAt)}</span>
 
-                    {/* Intent badge for outbound */}
-                    {message.direction === "outbound" && message.intent && (
-                      <Badge
-                        variant={getIntentBadgeVariant(message.intent)}
-                        className="h-4 text-[8px] px-1"
-                      >
-                        {message.intent}
-                      </Badge>
-                    )}
+                      {/* Intent badge for outbound */}
+                      {message.direction === "outbound" && message.intent && (
+                        <Badge
+                          variant={getIntentBadgeVariant(message.intent)}
+                          className="h-4.5 text-[9px] px-1.5 bg-white/20 border-white/30 text-white"
+                        >
+                          {message.intent}
+                        </Badge>
+                      )}
 
-                    {/* Tier indicator */}
-                    {message.direction === "outbound" && message.tierUsed && (
-                      <span className="opacity-50 flex items-center gap-0.5">
-                        <Bot className="h-2.5 w-2.5" />
-                        {message.tierUsed.replace("TIER_", "T")}
-                      </span>
-                    )}
+                      {/* AI Tier indicator */}
+                      {message.direction === "outbound" && message.tierUsed && (
+                        <span className="flex items-center gap-1 opacity-70">
+                          <Sparkles className="h-3 w-3" />
+                          {message.tierUsed.replace("TIER_", "T")}
+                        </span>
+                      )}
 
-                    {/* Status icon for outbound */}
-                    {message.direction === "outbound" && getStatusIcon(message.status)}
+                      {/* Status icon for outbound */}
+                      {message.direction === "outbound" && (
+                        <span className="opacity-70">{getStatusIcon(message.status)}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
+              ))}
 
-          {/* Typing indicator */}
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="bg-muted rounded-2xl px-4 py-2">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              {/* Typing indicator */}
+              {isTyping && (
+                <div className="flex justify-start animate-fade-in">
+                  <div className="card-premium bg-gradient-to-br from-card to-muted/5 rounded-2xl px-5 py-4 shadow-sm">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce shadow-sm shadow-primary/30" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce shadow-sm shadow-primary/30" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce shadow-sm shadow-primary/30" style={{ animationDelay: "300ms" }} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </>
           )}
 
           <div ref={messagesEndRef} />
         </CardContent>
 
         {/* Reply Input */}
-        <div className="border-t p-4">
+        <div className="border-t border-border/50 bg-gradient-to-b from-transparent to-muted/5 px-6 py-5 backdrop-blur-sm">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="flex gap-2"
+            className="flex gap-3"
           >
             <Input
               value={newMessage}
               onChange={(e) => handleInputChange(e.target.value)}
               placeholder="Écrire un message..."
               disabled={sending}
-              className="flex-1"
+              className="flex-1 h-12 bg-card border-border/60 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-xl shadow-sm focus:shadow-md"
             />
-            <Button type="submit" disabled={sending || !newMessage.trim()}>
+            <Button
+              type="submit"
+              disabled={sending || !newMessage.trim()}
+              size="icon"
+              className="h-12 w-12 shrink-0 rounded-xl glow-soft transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+            >
               {sending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               )}
             </Button>
           </form>
@@ -374,151 +415,171 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
       </Card>
 
       {/* Customer Info Sidebar */}
-      <Card className="w-80 shrink-0 overflow-auto">
-        <CardHeader>
-          <CardTitle className="text-sm flex items-center gap-2">
-            <User className="h-4 w-4" />
+      <Card className="overflow-hidden animate-fade-up stagger-2 hidden lg:block h-full card-premium shadow-layered">
+        <CardHeader className="border-b border-border/50 px-6 py-4 bg-gradient-to-b from-primary/5 to-transparent">
+          <CardTitle className="text-sm font-bold flex items-center gap-2 tracking-tight text-foreground">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center ring-2 ring-primary/20">
+              <User className="h-4 w-4 text-primary" />
+            </div>
             Informations client
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Phone */}
-          <div>
-            <p className="text-xs text-muted-foreground uppercase font-medium flex items-center gap-1">
-              <Phone className="h-3 w-3" />
-              Téléphone
-            </p>
-            <p className="text-sm font-medium">{conversation.customerPhone}</p>
-          </div>
-
-          {/* Name */}
-          {conversation.customerName && (
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium flex items-center gap-1">
-                <User className="h-3 w-3" />
-                Nom
+        <CardContent className="p-6 space-y-6 overflow-y-auto scrollbar-thin max-h-[calc(100vh-16rem)]">
+          {/* Contact Info */}
+          <div className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-primary/5 to-primary/[0.02] border border-primary/10">
+            {/* Phone */}
+            <div className="space-y-2">
+              <p className="text-label flex items-center gap-1.5">
+                <Phone className="h-3 w-3 text-primary" />
+                Téléphone
               </p>
-              <p className="text-sm font-medium">{conversation.customerName}</p>
+              <p className="text-body-strong">{conversation.customerPhone}</p>
             </div>
-          )}
 
-          {/* Email */}
-          {conversation.customerEmail && (
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium flex items-center gap-1">
-                <Mail className="h-3 w-3" />
-                Email
-              </p>
-              <p className="text-sm font-medium">{conversation.customerEmail}</p>
-            </div>
-          )}
-
-          <Separator />
-
-          {/* Status */}
-          <div>
-            <p className="text-xs text-muted-foreground uppercase font-medium">Statut</p>
-            <Badge
-              variant={
-                conversation.status === "active"
-                  ? "default"
-                  : conversation.status === "escalated"
-                    ? "destructive"
-                    : "secondary"
-              }
-              className="mt-1"
-            >
-              {conversation.status}
-            </Badge>
-          </div>
-
-          {/* Active Flow */}
-          {conversation.currentFlow && (
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium">Flow actif</p>
-              <Badge variant="outline" className="mt-1">
-                {conversation.currentFlow}
-              </Badge>
-            </div>
-          )}
-
-          {/* Lead Status */}
-          {conversation.leadStatus && (
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium flex items-center gap-1">
-                <Target className="h-3 w-3" />
-                Lead Status
-              </p>
-              <Badge variant="secondary" className="mt-1">
-                {conversation.leadStatus}
-              </Badge>
-            </div>
-          )}
-
-          {/* Lead Score */}
-          {conversation.leadScore !== null && conversation.leadScore !== undefined && (
-            <div>
-              <p className="text-xs text-muted-foreground uppercase font-medium">Score Lead</p>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={cn(
-                      "h-full rounded-full transition-all",
-                      conversation.leadScore >= 70
-                        ? "bg-green-500"
-                        : conversation.leadScore >= 40
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
-                    )}
-                    style={{ width: `${conversation.leadScore}%` }}
-                  />
-                </div>
-                <span className="text-sm font-medium">{conversation.leadScore}</span>
+            {/* Name */}
+            {conversation.customerName && (
+              <div className="space-y-2">
+                <p className="text-label flex items-center gap-1.5">
+                  <User className="h-3 w-3 text-primary" />
+                  Nom
+                </p>
+                <p className="text-body-strong">{conversation.customerName}</p>
               </div>
+            )}
+
+            {/* Email */}
+            {conversation.customerEmail && (
+              <div className="space-y-2">
+                <p className="text-label flex items-center gap-1.5">
+                  <Mail className="h-3 w-3 text-primary" />
+                  Email
+                </p>
+                <p className="text-body-strong break-all">{conversation.customerEmail}</p>
+              </div>
+            )}
+          </div>
+
+          <Separator className="my-5" />
+
+          {/* Conversation Status */}
+          <div className="space-y-4">
+            {/* Status */}
+            <div className="space-y-2">
+              <p className="text-label">Statut</p>
+              <Badge
+                variant={
+                  conversation.status === "active"
+                    ? "default"
+                    : conversation.status === "escalated"
+                      ? "destructive"
+                      : "secondary"
+                }
+                className="font-medium"
+              >
+                {conversation.status === "active" ? "Active" : conversation.status === "escalated" ? "Escaladée" : "Résolue"}
+              </Badge>
             </div>
-          )}
 
-          <Separator />
+            {/* Active Flow */}
+            {conversation.currentFlow && (
+              <div className="space-y-2">
+                <p className="text-label">Flow actif</p>
+                <Badge variant="outline" className="font-medium">
+                  {conversation.currentFlow}
+                </Badge>
+              </div>
+            )}
 
-          {/* Timestamps */}
-          <div>
-            <p className="text-xs text-muted-foreground uppercase font-medium flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              Créé le
-            </p>
-            <p className="text-sm">
-              {new Date(conversation.createdAt).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </p>
+            {/* Lead Status */}
+            {conversation.leadStatus && (
+              <div className="space-y-2">
+                <p className="text-label flex items-center gap-1.5">
+                  <Target className="h-3 w-3" />
+                  Lead Status
+                </p>
+                <Badge variant="secondary" className="font-medium">
+                  {conversation.leadStatus}
+                </Badge>
+              </div>
+            )}
+
+            {/* Lead Score */}
+            {conversation.leadScore !== null && conversation.leadScore !== undefined && (
+              <div className="space-y-3 p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/10 border border-border/50">
+                <p className="text-label flex items-center gap-1.5">
+                  <Target className="h-3 w-3 text-primary" />
+                  Score Lead
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-stat text-foreground">
+                      {conversation.leadScore}
+                    </span>
+                    <span className="text-sm text-muted-foreground font-medium">/ 100</span>
+                  </div>
+                  <div className="h-3 w-full bg-muted rounded-full overflow-hidden shadow-inner ring-1 ring-border/50">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all duration-700 animate-scale-in",
+                        conversation.leadScore >= 70
+                          ? "bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-500 shadow-lg shadow-emerald-500/30"
+                          : conversation.leadScore >= 40
+                            ? "bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 shadow-lg shadow-amber-500/30"
+                            : "bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 shadow-lg shadow-slate-500/20"
+                      )}
+                      style={{ width: `${conversation.leadScore}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div>
-            <p className="text-xs text-muted-foreground uppercase font-medium">Dernier message</p>
-            <p className="text-sm">
-              {new Date(conversation.lastMessageAt).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </p>
+          <Separator className="my-5" />
+
+          {/* Timeline */}
+          <div className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-muted/20 to-transparent border border-border/50">
+            {/* Created */}
+            <div className="space-y-2">
+              <p className="text-label flex items-center gap-1.5">
+                <Clock className="h-3 w-3 text-primary" />
+                Créé le
+              </p>
+              <p className="text-body font-medium">
+                {new Date(conversation.createdAt).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            </div>
+
+            {/* Last message */}
+            <div className="space-y-2">
+              <p className="text-label flex items-center gap-1.5">
+                <MessageSquare className="h-3 w-3 text-primary" />
+                Dernier message
+              </p>
+              <p className="text-body font-medium">
+                {new Date(conversation.lastMessageAt).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            </div>
+
+            {/* Message count */}
+            <div className="space-y-2">
+              <p className="text-label">Total Messages</p>
+              <p className="text-stat-secondary text-primary">{messages.length}</p>
+            </div>
           </div>
 
-          {/* Message count */}
-          <div>
-            <p className="text-xs text-muted-foreground uppercase font-medium flex items-center gap-1">
-              <MessageSquare className="h-3 w-3" />
-              Messages
-            </p>
-            <p className="text-sm font-medium">{messages.length}</p>
-          </div>
-
-          <Separator />
+          <Separator className="my-5" />
 
           {/* Internal Notes */}
           <InternalNotes conversationId={conversation.id} />

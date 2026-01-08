@@ -120,10 +120,13 @@ export function ConversationList({
 
   if (conversations.length === 0) {
     return (
-      <div className="rounded-lg border bg-white p-12 text-center">
-        <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-4 text-lg font-medium">Aucune conversation</h3>
-        <p className="mt-2 text-gray-500">
+      <div className="card-premium p-12 text-center animate-fade-up">
+        <div className="relative inline-block">
+          <div className="absolute inset-0 bg-primary/5 blur-2xl rounded-full" />
+          <MessageSquare className="relative mx-auto h-12 w-12 text-primary/40" />
+        </div>
+        <h3 className="mt-4 text-lg font-semibold tracking-tight text-foreground">Aucune conversation</h3>
+        <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
           Les conversations apparaitront ici quand vos clients vous enverront
           des messages WhatsApp.
         </p>
@@ -132,8 +135,8 @@ export function ConversationList({
   }
 
   return (
-    <div className="rounded-lg border bg-white divide-y">
-      {conversations.map((conversation) => {
+    <div className="card-premium divide-y divide-border/50">
+      {conversations.map((conversation, index) => {
         const status = statusConfig[conversation.status] || statusConfig.active;
         const StatusIcon = status.icon;
         const lastMessage = conversation.messages[0];
@@ -143,43 +146,50 @@ export function ConversationList({
         return (
           <div
             key={conversation.id}
+            onClick={() => router.push(`/dashboard/conversations/${conversation.id}`)}
             className={cn(
-              "flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors",
-              isAssigning && "opacity-50"
+              "flex items-center gap-4 p-4 hover:bg-primary/5 transition-all duration-300 cursor-pointer group animate-fade-up",
+              "hover:shadow-sm hover:pl-6",
+              isAssigning && "opacity-50 pointer-events-none"
             )}
+            style={{ animationDelay: `${Math.min(index * 50, 400)}ms` }}
           >
             <div className="flex-shrink-0">
-              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">
+              <Avatar className="h-10 w-10 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                <AvatarFallback className="text-sm font-semibold text-primary bg-transparent">
                   {getInitials(
                     conversation.customerName,
                     conversation.customerPhone
                   )}
-                </span>
-              </div>
+                </AvatarFallback>
+              </Avatar>
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="font-medium truncate">
+                <p className="text-body-strong truncate">
                   {conversation.customerName || conversation.customerPhone}
                 </p>
-                <span
+                <Badge
+                  variant="outline"
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+                    "inline-flex items-center gap-1 h-5 px-2 text-[10px] font-semibold border shadow-sm",
                     status.className
                   )}
                 >
-                  <StatusIcon className="h-3 w-3" />
+                  <StatusIcon className="h-2.5 w-2.5" />
                   {status.label}
-                </span>
+                </Badge>
                 {conversation.priority !== "normal" && (
-                  <Badge className={cn("text-[10px]", priority.color)}>
+                  <Badge
+                    variant="outline"
+                    className={cn("h-5 text-[10px] font-semibold border shadow-sm", priority.color)}
+                  >
                     {priority.label}
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-gray-500 truncate">
+              <p className="text-meta mt-1 truncate">
                 {lastMessage?.content || "Pas de messages"}
               </p>
             </div>
@@ -187,24 +197,24 @@ export function ConversationList({
             {/* Assignment Section */}
             <div className="flex-shrink-0 flex items-center gap-2">
               {conversation.assignedTo ? (
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6 bg-primary/10">
-                    <AvatarFallback className="text-xs text-primary">
+                <div className="flex items-center gap-2 bg-primary/5 rounded-full px-2.5 py-1 border border-primary/10">
+                  <Avatar className="h-5 w-5 bg-primary/10 ring-1 ring-primary/20">
+                    <AvatarFallback className="text-[9px] font-semibold text-primary">
                       {getInitials(
                         conversation.assignedTo.name,
                         conversation.assignedTo.email
                       )}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-xs text-slate-600 hidden sm:block">
+                  <span className="text-[11px] font-medium text-primary hidden sm:block">
                     {conversation.assignedTo.name ||
                       conversation.assignedTo.email.split("@")[0]}
                   </span>
                 </div>
               ) : (
-                <span className="text-xs text-slate-400 flex items-center gap-1">
+                <span className="text-micro text-muted-foreground flex items-center gap-1 px-2 py-1">
                   <User className="h-3 w-3" />
-                  Non assigne
+                  Non assigné
                 </span>
               )}
 
@@ -216,6 +226,7 @@ export function ConversationList({
                       size="sm"
                       className="h-7 w-7 p-0"
                       disabled={isAssigning}
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <UserPlus className="h-4 w-4" />
                     </Button>
@@ -248,13 +259,16 @@ export function ConversationList({
               )}
             </div>
 
-            <div className="flex-shrink-0 text-right">
-              <p className="text-xs text-gray-500">
+            <div className="flex-shrink-0 text-right space-y-1">
+              <p className="text-micro text-muted-foreground font-medium">
                 {formatDistanceToNow(conversation.updatedAt)}
               </p>
-              <p className="text-xs text-gray-400">
-                {conversation._count.messages} messages
-              </p>
+              <div className="flex items-center justify-end gap-1">
+                <MessageSquare className="h-3 w-3 text-muted-foreground/60" />
+                <p className="text-micro text-muted-foreground/80 font-medium tabular-nums">
+                  {conversation._count.messages}
+                </p>
+              </div>
             </div>
           </div>
         );

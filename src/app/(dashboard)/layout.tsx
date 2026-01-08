@@ -25,7 +25,7 @@ export default async function DashboardLayout({
     : user.email.slice(0, 2).toUpperCase();
 
   return (
-    <div className="h-screen bg-gradient-to-br from-[#F8FAFC] to-[#E2E6EE] relative overflow-hidden grain p-4 md:p-6 lg:p-8">
+    <div className="h-screen bg-gradient-to-br from-[#F8FAFC] to-[#E2E6EE] relative overflow-hidden grain">
       {/* Ambient Lighting - Atmospheric haze */}
       <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-indigo-300/20 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none z-0" />
@@ -51,7 +51,7 @@ export default async function DashboardLayout({
           }}
         />
         {/* Main content - add left padding on mobile for hamburger button */}
-        <main className="flex-1 h-full overflow-y-auto overflow-x-hidden scrollbar-thin pr-2 -mr-2 pt-14 md:pt-0">
+        <main className="flex-1 h-full overflow-y-auto overflow-x-hidden scrollbar-thin p-4 md:p-6 lg:p-8 pt-14 md:pt-6 lg:pt-8">
           {children}
         </main>
       </div>

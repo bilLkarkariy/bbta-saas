@@ -34,7 +34,7 @@ export default async function DashboardPage() {
   const responseRate = conversationCount > 0 ? 98.5 : 100;
 
   return (
-    <main className="space-y-6 p-6 relative min-h-full" aria-labelledby="dashboard-heading">
+    <main className="space-y-6 relative min-h-full" aria-labelledby="dashboard-heading">
       {/* Welcome Header */}
       <header className="flex flex-col md:flex-row items-center justify-between gap-4 relative z-10 animate-fade-up stagger-1">
         <div className="flex items-center gap-6">

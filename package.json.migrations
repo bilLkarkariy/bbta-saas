@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "postbuild": "prisma migrate deploy && npx tsx prisma/seed-bbta.ts"
+  }
+}

@@ -1,6 +1,7 @@
 import type { FlowDefinition, ValidationResult } from "./types";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import { sendWhatsAppMessage } from "@/lib/twilio";
 
 // Validate email format
 function isValidEmail(email: string): boolean {
@@ -230,6 +231,37 @@ Un conseiller vous contactera très prochainement. C'est bien noté ?`;
         } as Prisma.InputJsonValue,
       },
     });
+
+    // Send WhatsApp notification to tenant owner
+    try {
+      const tenant = await db.tenant.findUnique({
+        where: { id: context.tenant.id },
+        select: {
+          ownerPhone: true,
+          whatsappNumber: true,
+          name: true,
+        },
+      });
+
+      if (tenant?.ownerPhone && tenant?.whatsappNumber) {
+        const leadMessage = `🎯 Nouveau lead capturé!\n\n` +
+          `👤 Nom: ${data.name}\n` +
+          `${data.email ? `📧 Email: ${data.email}\n` : ""}` +
+          `${data.phone ? `📱 Téléphone: ${data.phone}\n` : ""}` +
+          `🎯 Intérêt: ${data.interest}\n` +
+          `🕐 Disponibilité: ${data.availability}\n\n` +
+          `Voir détails: https://your-app-domain.example/dashboard/conversations/${context.conversation.id}`;
+
+        await sendWhatsAppMessage({
+          to: tenant.ownerPhone,
+          body: leadMessage,
+          from: tenant.whatsappNumber,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to send lead notification:", error);
+      // Don't fail the flow if notification fails
+    }
 
     return `Merci ${data.name} ! 🙏
 

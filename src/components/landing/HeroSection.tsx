@@ -47,7 +47,7 @@ export function HeroSection() {
                     className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8"
                 >
                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    <span className="text-xs font-mono text-white tracking-widest uppercase">Public Beta Disponible</span>
+                    <span className="text-xs font-mono text-white tracking-widest uppercase">Agent IA Financier</span>
                 </motion.div>
 
                 {/* Headline */}
@@ -57,7 +57,7 @@ export function HeroSection() {
                     transition={{ delay: 0.1 }}
                     className="text-5xl md:text-8xl font-bold tracking-tighter mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 leading-[1.1]"
                 >
-                    Convertissez 3x plus <br /> de leads sans recruter.
+                    ARRÊTEZ DE PAYER <br /> LES YEUX FERMÉS.
                 </motion.h1>
 
                 {/* Subtext */}
@@ -67,7 +67,7 @@ export function HeroSection() {
                     transition={{ delay: 0.2 }}
                     className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
                 >
-                    Automatisez vos conversations WhatsApp avec une precision chirurgicale. Repondez instantanement, qualifiez vos prospects et boostez votre ROI 24h/24.
+                    L&apos;Agent IA qui audite chaque facture fournisseur, vérifie les prix contre devis et prépare vos paiements. Sécurité financière totale pour PME.
                 </motion.p>
 
                 {/* CTAs */}
@@ -75,21 +75,32 @@ export function HeroSection() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-12"
+                    className="flex flex-col items-center justify-center gap-6 mb-12"
                 >
-                    <Magnetic>
-                        <Button size="lg" className="h-14 px-8 text-lg bg-primary hover:bg-primary/90 text-white shadow-[0_0_30px_rgba(59,130,246,0.3)] group relative overflow-hidden">
-                            <span className="relative z-10 flex items-center">
-                                Demarrer gratuitement
-                                <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <Magnetic>
+                            <Button size="lg" className="h-14 px-8 text-lg bg-primary hover:bg-primary/90 text-white shadow-[0_0_30px_rgba(59,130,246,0.3)] group relative overflow-hidden">
+                                <span className="relative z-10 flex items-center">
+                                    Auditer mes processus Achats
+                                    <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </span>
+                                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                            </Button>
+                        </Magnetic>
+                        <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white hover:scale-105 transition-all">
+                            <Play className="mr-2 w-4 h-4 fill-white" />
+                            Voir le workflow
                         </Button>
-                    </Magnetic>
-                    <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white hover:scale-105 transition-all">
-                        <Play className="mr-2 w-4 h-4 fill-white" />
-                        Voir la demo
-                    </Button>
+                    </div>
+
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="text-sm font-medium text-emerald-400/80 bg-emerald-400/5 px-4 py-2 rounded-full border border-emerald-400/10 backdrop-blur-sm"
+                    >
+                        ✨ Garantie de rentabilité : L&apos;outil est gratuit si nous ne trouvons pas d&apos;économies le 1er mois.
+                    </motion.p>
                 </motion.div>
 
                 {/* Trust Badges */}
@@ -103,21 +114,19 @@ export function HeroSection() {
                         <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center">
                             <CheckCircle className="w-3 h-3 text-emerald-500" />
                         </div>
-                        <span className="text-xs font-medium text-white tracking-wide">Sans engagement</span>
+                        <span className="text-xs font-medium text-white tracking-wide">AES-256 Chiffrement</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                            {[...Array(5)].map((_, i) => (
-                                <Star key={i} className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                            ))}
+                        <div className="w-5 h-5 rounded-full bg-blue-500/10 flex items-center justify-center">
+                            <CheckCircle className="w-3 h-3 text-blue-500" />
                         </div>
-                        <span className="text-xs font-medium text-white tracking-wide">4.9/5 sur G2</span>
+                        <span className="text-xs font-medium text-white tracking-wide">RGPD Compliant</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center">
                             <Users className="w-3 h-3 text-primary" />
                         </div>
-                        <span className="text-xs font-medium text-white tracking-wide">+2,000 equipes</span>
+                        <span className="text-xs font-medium text-white tracking-wide">Accès lecture seule</span>
                     </div>
                 </motion.div>
 
@@ -128,7 +137,7 @@ export function HeroSection() {
                     transition={{ delay: 0.5 }}
                     className="text-xs font-mono text-muted-foreground/60 tracking-[0.3em] uppercase mb-20"
                 >
-                    ILS ACCELERENT LEUR CROISSANCE AVEC LUMELIA
+                    PME & ETI QUI SÉCURISENT LEURS PAIEMENTS
                 </motion.p>
 
                 {/* 3D Dashboard Mock - Entrance Wrapper */}
@@ -155,7 +164,7 @@ export function HeroSection() {
                         >
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-xs font-bold text-emerald-400 font-mono tracking-tight cursor-default">ROI +300%</span>
+                                <span className="text-xs font-bold text-emerald-400 font-mono tracking-tight cursor-default">0€ payé en trop</span>
                             </div>
                         </motion.div>
 
@@ -166,7 +175,7 @@ export function HeroSection() {
                         >
                             <div className="flex items-center gap-2">
                                 <CheckCircle className="w-3 h-3 text-primary" />
-                                <span className="text-xs font-bold text-white font-mono tracking-tight cursor-default">Lead Qualifie</span>
+                                <span className="text-xs font-bold text-white font-mono tracking-tight cursor-default">Facture vérifiée ✓</span>
                             </div>
                         </motion.div>
 
@@ -177,7 +186,7 @@ export function HeroSection() {
                         >
                             <div className="flex items-center gap-2">
                                 <Zap className="w-3 h-3 text-yellow-500" />
-                                <span className="text-xs font-bold text-white/80 font-mono tracking-tight cursor-default">Sync CRM</span>
+                                <span className="text-xs font-bold text-white/80 font-mono tracking-tight cursor-default">Export comptable prêt</span>
                             </div>
                         </motion.div>
 
@@ -189,17 +198,17 @@ export function HeroSection() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left relative z-10">
                                 <div className="md:col-span-1 space-y-6">
                                     <StatsCard
-                                        title="Total Messages"
-                                        value="12,842"
-                                        trend="12.5%"
+                                        title="Factures auditées ce mois"
+                                        value="1,284"
+                                        trend="100%"
                                         trendUp={true}
                                         icon={<IconMessages className="w-4 h-4" />}
                                         variant="glass"
                                     />
                                     <StatsCard
-                                        title="Nouveaux Contacts"
-                                        value="832"
-                                        trend="8.2%"
+                                        title="Économies détectées"
+                                        value="4,230€"
+                                        trend="+12.5%"
                                         trendUp={true}
                                         icon={<IconContacts className="w-4 h-4" />}
                                         variant="glass"

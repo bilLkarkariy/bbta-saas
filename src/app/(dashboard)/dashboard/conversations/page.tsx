@@ -1,6 +1,7 @@
 import { getCurrentTenant } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ConversationList } from "@/components/dashboard/conversation-list";
+import { MessageSquare } from "lucide-react";
 
 export default async function ConversationsPage() {
   const { tenant, user } = await getCurrentTenant();
@@ -54,18 +55,25 @@ export default async function ConversationsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Conversations</h2>
-        <p className="text-gray-500">
-          Gerez vos conversations WhatsApp avec vos clients
+      <header className="space-y-2 animate-fade-up">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center ring-2 ring-primary/20">
+            <MessageSquare className="h-5 w-5 text-primary" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Conversations</h1>
+        </div>
+        <p className="text-body text-muted-foreground ml-13">
+          Gérez vos conversations WhatsApp avec vos clients
         </p>
-      </div>
+      </header>
 
-      <ConversationList
-        conversations={conversations}
-        agents={agents}
-        canAssign={canAssign}
-      />
+      <div className="animate-fade-up stagger-2">
+        <ConversationList
+          conversations={conversations}
+          agents={agents}
+          canAssign={canAssign}
+        />
+      </div>
     </div>
   );
 }

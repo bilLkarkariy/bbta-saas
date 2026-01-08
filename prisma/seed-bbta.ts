@@ -1,5 +1,21 @@
 import "dotenv/config";
-import { db as prisma } from "../src/lib/db";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
+
+// Create a connection using the same approach as the app
+const url = new URL(process.env.DATABASE_URL!);
+const pool = new Pool({
+  host: url.hostname,
+  port: parseInt(url.port) || 5432,
+  database: url.pathname.slice(1),
+  user: url.username,
+  password: url.password || undefined,
+  ssl: url.searchParams.get("sslmode") === "require" ? { rejectUnauthorized: false } : false,
+});
+
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log("🏪 Creating BBTA Nails demo tenant...");
@@ -110,4 +126,7 @@ async function main() {
 
 main()
   .catch(console.error)
-  .finally(() => process.exit(0));
+  .finally(async () => {
+    await pool.end();
+    process.exit(0);
+  });

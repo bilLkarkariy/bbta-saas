@@ -16,7 +16,7 @@ export function SocialProof() {
         <section className="py-20 bg-black border-y border-white/5 relative overflow-hidden">
             <div className="container px-4 mx-auto max-w-7xl relative z-10 flex flex-col items-center">
                 <p className="text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground mb-12 animate-pulse">
-                    ILS ACCÉLÈRENT LEUR CROISSANCE AVEC LUMELIA
+                    LA FIN DE LA &quot;BOÎTE À CHAUSSURES&quot; NUMÉRIQUE.
                 </p>
 
                 <div className="w-full relative">

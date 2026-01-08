@@ -2,7 +2,6 @@ import {
   Home,
   MessageSquare,
   Users,
-  UsersRound,
   Megaphone,
   FileText,
   Calendar,
@@ -11,7 +10,6 @@ import {
   Zap,
   BarChart2,
   LineChart,
-  Plug,
   Settings,
 } from "lucide-react";
 
@@ -66,10 +64,8 @@ export const navigation: NavGroup[] = [
     ]
   },
   {
-    title: "SETTINGS",
+    title: "",
     items: [
-      { title: "Integrations", href: "/dashboard/integrations", icon: Plug },
-      { title: "Team", href: "/dashboard/team", icon: UsersRound },
       { title: "Settings", href: "/dashboard/settings", icon: Settings },
     ]
   }

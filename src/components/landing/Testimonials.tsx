@@ -6,21 +6,15 @@ import Image from "next/image";
 
 const testimonials = [
     {
-        name: "Thomas Bernard",
-        role: "CEO, TechFlow",
-        content: "Lumelia a radicalement changé notre gestion des leads. Nous avons triplé notre taux de conversion WhatsApp en seulement deux mois.",
+        name: "DAF, Daspren",
+        role: "Industrie",
+        content: "Avant, ma responsable administrative passait ses vendredis à vérifier les factures. Lumelia a détecté une hausse tarifaire de 15% non contractuelle dès la première semaine.",
         avatar: "/testimonials/avatar-thomas.png",
     },
     {
-        name: "Sophie Martin",
-        role: "Directrice Marketing, E-com Pro",
-        content: "L'IA est curieusement précise. Elle gère 80% des questions de nos clients sans aucune intervention humaine. Un gain de temps inestimable.",
-        avatar: "/testimonials/avatar-sophie.png",
-    },
-    {
-        name: "Marc Durand",
-        role: "Fondateur, ImmoDirect",
-        content: "Enfin une plateforme pensée pour le B2B. L'intégration avec notre CRM s'est faite en quelques minutes. Je recommande vivement.",
+        name: "Sébastien Bireaud",
+        role: "Directeur, Olife",
+        content: "Mon expert-comptable ne me relance plus pour les pièces manquantes. L'IA harcèle gentiment les managers pour valider leurs achats. Je gagne 4h par semaine.",
         avatar: "/testimonials/avatar-marc.png",
     },
 ];
@@ -34,11 +28,11 @@ export function Testimonials() {
                         Ils nous font confiance.
                     </h2>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                        Découvrez pourquoi les entreprises les plus innovantes choisissent Lumelia pour automatiser leur croissance.
+                        Découvrez comment Lumelia sécurise la rentabilité des PME et libère leurs équipes administratives.
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
                     {testimonials.map((t, i) => (
                         <motion.div
                             key={i}

@@ -23,8 +23,6 @@ export interface SidebarProps {
   workspace: SidebarWorkspace;
   usage: SidebarUsage;
   onLogout?: () => void;
-  onSettingsClick?: () => void;
-  onNotificationsClick?: () => void;
   onWorkspaceCreate?: () => void;
   onWorkspaceSwitch?: (workspaceId: string) => void;
 }
