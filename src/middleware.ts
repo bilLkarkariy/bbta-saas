@@ -7,6 +7,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks/(.*)", // Twilio + Clerk webhooks = public
   "/api/admin/seed-bbta", // Seed endpoint
   "/api/admin/migrate", // Migration endpoint
+  "/api/cron/(.*)", // Cron endpoints = public (use Bearer auth)
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
