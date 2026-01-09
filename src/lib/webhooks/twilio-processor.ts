@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { sendWhatsAppMessage } from "@/lib/twilio";
 import { routeIntent } from "@/lib/ai/router";
 import { generateResponse } from "@/lib/ai/responder";
+import { executeFlow, hasActiveFlow } from "@/lib/ai/flows/executor";
 
 // ============ IDEMPOTENCY CHECK ============
 // TODO: Replace with Redis for production multi-instance deployments
@@ -193,20 +194,73 @@ export async function processInboundMessage(
 
     console.log(`[AI] Intent: ${routerResult.intent} (${routerResult.confidence})`);
 
-    // 8. Generate response
-    const responderResult = await generateResponse({
-      routerResult,
-      message: Body,
-      customerName: ProfileName || undefined,
-      businessName: tenant.name,
-      businessType: tenant.businessType,
-      faqs: tenant.faqs.map((f) => ({
-        question: f.question,
-        answer: f.answer,
-        category: f.category,
-      })),
-      conversationHistory,
-    });
+    // 8. Check if we should use structured flow or free-form AI response
+    const hasFlow = await hasActiveFlow(conversation.id);
+    const shouldUseFlow = hasFlow || routerResult.suggested_flow;
+
+    let responseText = "";
+    let modelUsed = "";
+    let shouldEscalate = false;
+
+    if (shouldUseFlow) {
+      // Use structured booking/lead-capture flow
+      console.log(`[Flow] ${hasFlow ? "Continuing" : "Starting"} flow: ${routerResult.suggested_flow || "existing"}`);
+
+      const flowResult = await executeFlow(
+        conversation.id,
+        Body,
+        routerResult.suggested_flow
+      );
+
+      if (flowResult) {
+        responseText = flowResult.response;
+        modelUsed = "flow";
+
+        if (flowResult.flowComplete) {
+          console.log("[Flow] Flow completed successfully");
+        } else if (flowResult.flowCancelled) {
+          console.log("[Flow] Flow cancelled by user or error");
+          shouldEscalate = true;
+        }
+      } else {
+        // Flow execution failed, fallback to AI response
+        console.warn("[Flow] Flow execution returned null, falling back to AI response");
+        const fallback = await generateResponse({
+          routerResult,
+          message: Body,
+          customerName: ProfileName || undefined,
+          businessName: tenant.name,
+          businessType: tenant.businessType,
+          faqs: tenant.faqs.map((f) => ({
+            question: f.question,
+            answer: f.answer,
+            category: f.category,
+          })),
+          conversationHistory,
+        });
+        responseText = fallback.response;
+        modelUsed = fallback.model_used;
+        shouldEscalate = fallback.should_escalate;
+      }
+    } else {
+      // Use free-form AI response
+      const responderResult = await generateResponse({
+        routerResult,
+        message: Body,
+        customerName: ProfileName || undefined,
+        businessName: tenant.name,
+        businessType: tenant.businessType,
+        faqs: tenant.faqs.map((f) => ({
+          question: f.question,
+          answer: f.answer,
+          category: f.category,
+        })),
+        conversationHistory,
+      });
+      responseText = responderResult.response;
+      modelUsed = responderResult.model_used;
+      shouldEscalate = responderResult.should_escalate;
+    }
 
     // 9. Send via Twilio
     let twilioSid = "";
@@ -214,7 +268,7 @@ export async function processInboundMessage(
     try {
       const result = await sendWhatsAppMessage({
         to: customerPhone,
-        body: responderResult.response,
+        body: responseText,
         from: businessPhone,
       });
       twilioSid = result.sid;
@@ -228,28 +282,31 @@ export async function processInboundMessage(
       data: {
         conversationId: conversation.id,
         direction: "outbound",
-        content: responderResult.response,
+        content: responseText,
         twilioSid: twilioSid || undefined,
         status: sendStatus,
         intent: routerResult.intent,
         confidence: routerResult.confidence,
         tierUsed: `TIER_${routerResult.tier_needed}`,
         metadata: {
-          model: responderResult.model_used,
+          model: modelUsed,
+          usedFlow: shouldUseFlow,
         },
       },
     });
 
     // 11. Update conversation if escalated
-    if (responderResult.should_escalate) {
+    if (shouldEscalate) {
       await db.conversation.update({
         where: { id: conversation.id },
         data: { status: "escalated" },
       });
     }
 
-    // 12. Track AI usage
-    await trackAIUsage(tenant.id, routerResult, responderResult, Body);
+    // 12. Track AI usage (only if not using flow)
+    if (!shouldUseFlow) {
+      await trackAIUsage(tenant.id, routerResult, { model_used: modelUsed, response: responseText }, Body);
+    }
 
     return { success: true, messageId: inboundMessage.id };
   } catch (error) {
