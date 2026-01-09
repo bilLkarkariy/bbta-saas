@@ -30,13 +30,12 @@ export async function sendBookingReminders() {
         continue;
       }
 
-      const message = `🗓️ Rappel de rendez-vous\n\nBonjour ${booking.customerName || ""},\n\nVotre rendez-vous est prévu demain à ${booking.time} pour ${booking.service}.\n\nMerci de confirmer votre présence :`;
+      const message = `🗓️ *Rappel de rendez-vous*\n\nBonjour ${booking.customerName || ""},\n\nVotre rendez-vous est prévu *demain à ${booking.time}* pour :\n📌 ${booking.service}\n\n━━━━━━━━━━━━━━━\nMerci de répondre :\n\n✅ Tapez *OK* pour confirmer\n❌ Tapez *ANNULER* pour annuler\n\nÀ bientôt ! 👋`;
 
       await sendWhatsAppMessage({
         to: booking.customerPhone,
         body: message,
         from: booking.tenant.whatsappNumber,
-        buttons: ["✅ Confirmer", "❌ Annuler"], // Interactive buttons
       });
 
       // Mark as sent
