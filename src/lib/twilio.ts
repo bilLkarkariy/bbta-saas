@@ -23,12 +23,14 @@ export interface SendWhatsAppOptions {
   to: string;
   body: string;
   from?: string;
+  buttons?: string[]; // Quick reply buttons (max 3)
 }
 
 export async function sendWhatsAppMessage({
   to,
   body,
   from,
+  buttons,
 }: SendWhatsAppOptions): Promise<{ sid: string; status: string }> {
   const client = getTwilioClient();
   const fromNumber = from || process.env.TWILIO_WHATSAPP_NUMBER;
@@ -43,11 +45,19 @@ export async function sendWhatsAppMessage({
     ? fromNumber
     : `whatsapp:${fromNumber}`;
 
-  const message = await client.messages.create({
+  const messageParams: any = {
     body,
     from: fromWhatsApp,
     to: toWhatsApp,
-  });
+  };
+
+  // Add interactive buttons if provided
+  if (buttons && buttons.length > 0) {
+    // Twilio WhatsApp supports quick reply buttons (max 3)
+    messageParams.persistentAction = buttons.slice(0, 3);
+  }
+
+  const message = await client.messages.create(messageParams);
 
   return {
     sid: message.sid,
