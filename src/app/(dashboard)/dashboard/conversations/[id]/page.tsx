@@ -55,7 +55,29 @@ export default async function ConversationPage({ params }: ConversationPageProps
   };
 
   return (
-    <div className="space-y-6 w-full max-w-full">
+    <div className="w-full max-w-full space-y-[var(--dashboard-section-gap)]">
+      {/* Page Header */}
+      <div className="flex items-center gap-4">
+        <Link href="/dashboard/conversations">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 rounded-lg"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Conversation
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {conversation.customerName || conversation.customerPhone}
+          </p>
+        </div>
+      </div>
+
+      {/* Conversation Detail */}
       <ConversationDetail conversation={conversationData} />
     </div>
   );

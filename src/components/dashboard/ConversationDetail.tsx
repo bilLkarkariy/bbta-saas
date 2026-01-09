@@ -243,36 +243,37 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 h-full w-full" style={{ maxWidth: '100%' }}>
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] w-full gap-[var(--dashboard-section-gap)] max-w-full">
       {/* Messages Panel */}
-      <Card className="flex flex-col animate-fade-up stagger-1 h-full w-full card-premium shadow-layered overflow-hidden">
+      <Card className="flex flex-col w-full overflow-hidden glass shadow-layered" style={{ maxHeight: 'calc(100vh - 200px)' }}>
         {/* Conversation Header */}
-        <CardHeader className="border-b border-border/50 px-6 py-4 bg-gradient-to-b from-background/50 to-transparent backdrop-blur-sm shrink-0">
-          <div className="flex items-center justify-between">
+        <CardHeader className="border-b border-border shrink-0 p-[var(--dashboard-card-padding)]">
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 bg-muted/30 rounded-full px-3 py-1.5 border border-border/50">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10">
                 <Phone className="h-3.5 w-3.5 text-primary" />
-                <p className="text-sm font-medium text-foreground">
+                <span className="text-sm font-medium text-foreground">
                   {conversation.customerPhone}
-                </p>
+                </span>
               </div>
+
               {conversation.leadScore !== null && conversation.leadScore !== undefined && (
-                <Badge
-                  variant="outline"
+                <div
                   className={cn(
-                    "text-[10px] h-6 px-2.5 font-semibold shadow-sm",
+                    "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium",
                     conversation.leadScore >= 70
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-200/60"
+                      ? "bg-success/10 text-success border border-success/20"
                       : conversation.leadScore >= 40
-                        ? "bg-amber-50 text-amber-700 border-amber-200/60"
-                        : "bg-slate-50 text-slate-600 border-slate-200/60"
+                        ? "bg-warning/10 text-warning border border-warning/20"
+                        : "bg-muted text-muted-foreground border border-border"
                   )}
                 >
-                  <Target className="h-2.5 w-2.5 mr-1" />
-                  Score: {conversation.leadScore}
-                </Badge>
+                  <Target className="h-3 w-3" />
+                  <span>{conversation.leadScore}</span>
+                </div>
               )}
             </div>
+
             <Badge
               variant={
                 conversation.status === "active"
@@ -281,7 +282,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
                     ? "destructive"
                     : "secondary"
               }
-              className="font-semibold px-4 py-1.5 shadow-sm"
+              className="text-xs font-medium"
             >
               {conversation.status === "active" ? "Active" : conversation.status === "escalated" ? "Escaladée" : "Résolue"}
             </Badge>
@@ -289,89 +290,82 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
         </CardHeader>
 
         {/* Messages Area */}
-        <CardContent className="flex-1 overflow-y-auto overflow-x-hidden p-6 scrollbar-thin space-y-6 bg-gradient-to-b from-muted/5 to-transparent" style={{ minHeight: 0 }}>
+        <CardContent
+          className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin flex flex-col gap-[var(--dashboard-card-gap)] p-[var(--dashboard-card-padding)]"
+          style={{ minHeight: 0 }}
+        >
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground animate-fade-in">
-              <div className="relative mb-4">
-                <div className="absolute inset-0 bg-primary/10 blur-3xl rounded-full" />
-                <div className="relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-full p-6 border border-primary/20">
-                  <MessageSquare className="h-12 w-12 text-primary/60" />
-                </div>
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="mb-6 p-6 rounded-2xl bg-primary/5 border border-primary/10">
+                <MessageSquare className="h-12 w-12 text-primary/60" />
               </div>
-              <p className="text-lg font-semibold tracking-tight">Aucun message</p>
-              <p className="text-sm text-muted-foreground/70">La conversation commence ici</p>
+              <h3 className="text-body-strong text-foreground mb-1">Aucun message</h3>
+              <p className="text-meta text-muted-foreground">La conversation commence ici</p>
             </div>
           ) : (
             <>
-              {messages.map((message, index) => (
+              {messages.map((message) => (
                 <div
                   key={message.id}
                   className={cn(
-                    "flex animate-fade-up",
+                    "flex",
                     message.direction === "outbound" ? "justify-end" : "justify-start"
                   )}
-                  style={{ animationDelay: `${index <= 7 ? index * 40 : 300}ms` }}
                 >
                   <div
                     className={cn(
-                      "max-w-[75%] rounded-2xl px-5 py-3.5 space-y-2 transition-all duration-300 hover:scale-[1.01]",
+                      "max-w-[80%] lg:max-w-[70%] rounded-2xl px-4 py-3 transition-all duration-200",
                       message.direction === "outbound"
-                        ? "bg-gradient-to-br from-primary via-primary to-primary/95 text-primary-foreground glow-primary"
-                        : "card-premium hover:shadow-layered-lg bg-gradient-to-br from-card to-muted/5"
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "bg-card border border-border shadow-sm"
                     )}
                   >
                     <p
                       className={cn(
-                        "text-sm leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere",
-                        message.direction === "inbound" && "text-slate-700"
+                        "text-sm leading-relaxed whitespace-pre-wrap break-words",
+                        message.direction === "inbound" && "text-foreground"
                       )}
                       dangerouslySetInnerHTML={{ __html: sanitizeContent(message.content) }}
                     />
 
-                    {/* Message metadata */}
                     <div
                       className={cn(
-                        "flex items-center gap-2 text-[11px] font-medium",
-                        message.direction === "outbound" ? "justify-end text-white/70" : "justify-start text-slate-500"
+                        "flex items-center flex-wrap gap-2 text-xs mt-2",
+                        message.direction === "outbound"
+                          ? "justify-end text-primary-foreground/70"
+                          : "justify-start text-muted-foreground"
                       )}
                     >
                       <span>{formatMessageTime(message.createdAt)}</span>
 
-                      {/* Intent badge for outbound */}
                       {message.direction === "outbound" && message.intent && (
-                        <Badge
-                          variant={getIntentBadgeVariant(message.intent)}
-                          className="h-4.5 text-[9px] px-1.5 bg-white/20 border-white/30 text-white"
-                        >
+                        <span className="px-1.5 py-0.5 rounded bg-primary-foreground/20 text-[10px] font-medium">
                           {message.intent}
-                        </Badge>
-                      )}
-
-                      {/* AI Tier indicator */}
-                      {message.direction === "outbound" && message.tierUsed && (
-                        <span className="flex items-center gap-1 opacity-70">
-                          <Sparkles className="h-3 w-3" />
-                          {message.tierUsed.replace("TIER_", "T")}
                         </span>
                       )}
 
-                      {/* Status icon for outbound */}
+                      {message.direction === "outbound" && message.tierUsed && (
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="h-3 w-3" />
+                          <span className="text-[10px]">{message.tierUsed.replace("TIER_", "T")}</span>
+                        </span>
+                      )}
+
                       {message.direction === "outbound" && (
-                        <span className="opacity-70">{getStatusIcon(message.status)}</span>
+                        <span>{getStatusIcon(message.status)}</span>
                       )}
                     </div>
                   </div>
                 </div>
               ))}
 
-              {/* Typing indicator */}
               {isTyping && (
-                <div className="flex justify-start animate-fade-in">
-                  <div className="card-premium bg-gradient-to-br from-card to-muted/5 rounded-2xl px-5 py-4 shadow-sm">
+                <div className="flex justify-start">
+                  <div className="px-4 py-3 rounded-2xl bg-card border border-border shadow-sm">
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce shadow-sm shadow-primary/30" style={{ animationDelay: "0ms" }} />
-                      <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce shadow-sm shadow-primary/30" style={{ animationDelay: "150ms" }} />
-                      <span className="w-2.5 h-2.5 bg-primary rounded-full animate-bounce shadow-sm shadow-primary/30" style={{ animationDelay: "300ms" }} />
+                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
                   </div>
                 </div>
@@ -383,31 +377,31 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
         </CardContent>
 
         {/* Reply Input */}
-        <div className="border-t border-border/50 bg-gradient-to-b from-transparent to-muted/5 px-6 py-5 backdrop-blur-sm shrink-0">
+        <div className="border-t border-border shrink-0 p-[var(--dashboard-card-padding)]">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="flex gap-3"
+            className="flex items-center gap-3"
           >
             <Input
               value={newMessage}
               onChange={(e) => handleInputChange(e.target.value)}
               placeholder="Écrire un message..."
               disabled={sending}
-              className="flex-1 h-12 bg-card border-border/60 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-xl shadow-sm focus:shadow-md"
+              className="flex-1 h-11 text-sm transition-all"
             />
             <Button
               type="submit"
               disabled={sending || !newMessage.trim()}
               size="icon"
-              className="h-12 w-12 shrink-0 rounded-xl glow-soft transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+              className="h-11 w-11 shrink-0 transition-all"
             >
               {sending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Send className="h-5 w-5" />
+                <Send className="h-4 w-4" />
               )}
             </Button>
           </form>
@@ -415,56 +409,57 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
       </Card>
 
       {/* Customer Info Sidebar */}
-      <Card className="animate-fade-up stagger-2 hidden lg:flex lg:flex-col h-full w-full card-premium shadow-layered overflow-hidden">
-        <CardHeader className="border-b border-border/50 px-6 py-4 bg-gradient-to-b from-primary/5 to-transparent">
-          <CardTitle className="text-sm font-bold flex items-center gap-2 tracking-tight text-foreground">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center ring-2 ring-primary/20">
-              <User className="h-4 w-4 text-primary" />
-            </div>
+      <Card className="hidden lg:flex lg:flex-col w-full glass shadow-layered overflow-hidden" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+        <CardHeader className="border-b border-border shrink-0 p-[var(--dashboard-card-padding)]">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2 text-foreground">
+            <User className="h-4 w-4 text-primary" />
             Informations client
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto overflow-x-hidden scrollbar-thin" style={{ minHeight: 0 }}>
+        <CardContent
+          className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin flex flex-col gap-[var(--dashboard-card-gap)] p-[var(--dashboard-card-padding)]"
+          style={{ minHeight: 0 }}
+        >
           {/* Contact Info */}
-          <div className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-primary/5 to-primary/[0.02] border border-primary/10">
-            {/* Phone */}
-            <div className="space-y-2">
-              <p className="text-label flex items-center gap-1.5">
-                <Phone className="h-3 w-3 text-primary" />
-                Téléphone
-              </p>
+          <div className="space-y-4 p-4 rounded-xl bg-muted/30 border border-border">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                <p className="text-label">Téléphone</p>
+              </div>
               <p className="text-body-strong">{conversation.customerPhone}</p>
             </div>
 
-            {/* Name */}
             {conversation.customerName && (
-              <div className="space-y-2">
-                <p className="text-label flex items-center gap-1.5">
-                  <User className="h-3 w-3 text-primary" />
-                  Nom
-                </p>
-                <p className="text-body-strong">{conversation.customerName}</p>
-              </div>
+              <>
+                <Separator />
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    <p className="text-label">Nom</p>
+                  </div>
+                  <p className="text-body-strong">{conversation.customerName}</p>
+                </div>
+              </>
             )}
 
-            {/* Email */}
             {conversation.customerEmail && (
-              <div className="space-y-2">
-                <p className="text-label flex items-center gap-1.5">
-                  <Mail className="h-3 w-3 text-primary" />
-                  Email
-                </p>
-                <p className="text-body-strong break-all">{conversation.customerEmail}</p>
-              </div>
+              <>
+                <Separator />
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                    <p className="text-label">Email</p>
+                  </div>
+                  <p className="text-body-strong break-all">{conversation.customerEmail}</p>
+                </div>
+              </>
             )}
           </div>
 
-          <Separator className="my-5" />
-
-          {/* Conversation Status */}
-          <div className="space-y-4">
-            {/* Status */}
-            <div className="space-y-2">
+          {/* Status & Lead Info */}
+          <div className="space-y-3 p-4 rounded-xl bg-muted/30 border border-border">
+            <div className="space-y-1.5">
               <p className="text-label">Statut</p>
               <Badge
                 variant={
@@ -474,78 +469,78 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
                       ? "destructive"
                       : "secondary"
                 }
-                className="font-medium"
+                className="text-xs font-medium"
               >
                 {conversation.status === "active" ? "Active" : conversation.status === "escalated" ? "Escaladée" : "Résolue"}
               </Badge>
             </div>
 
-            {/* Active Flow */}
             {conversation.currentFlow && (
-              <div className="space-y-2">
-                <p className="text-label">Flow actif</p>
-                <Badge variant="outline" className="font-medium">
-                  {conversation.currentFlow}
-                </Badge>
-              </div>
+              <>
+                <Separator />
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Bot className="h-3.5 w-3.5 text-muted-foreground" />
+                    <p className="text-label">Flow actif</p>
+                  </div>
+                  <p className="text-body-strong">{conversation.currentFlow}</p>
+                </div>
+              </>
             )}
 
-            {/* Lead Status */}
             {conversation.leadStatus && (
-              <div className="space-y-2">
-                <p className="text-label flex items-center gap-1.5">
-                  <Target className="h-3 w-3" />
-                  Lead Status
-                </p>
-                <Badge variant="secondary" className="font-medium">
-                  {conversation.leadStatus}
-                </Badge>
-              </div>
+              <>
+                <Separator />
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <Target className="h-3.5 w-3.5 text-muted-foreground" />
+                    <p className="text-label">Lead Status</p>
+                  </div>
+                  <p className="text-body-strong">{conversation.leadStatus}</p>
+                </div>
+              </>
             )}
 
-            {/* Lead Score */}
             {conversation.leadScore !== null && conversation.leadScore !== undefined && (
-              <div className="space-y-3 p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/10 border border-border/50">
-                <p className="text-label flex items-center gap-1.5">
-                  <Target className="h-3 w-3 text-primary" />
-                  Score Lead
-                </p>
+              <>
+                <Separator />
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-stat text-foreground">
+                  <div className="flex items-center gap-1.5">
+                    <Target className="h-3.5 w-3.5 text-muted-foreground" />
+                    <p className="text-label">Score Lead</p>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-foreground">
                       {conversation.leadScore}
                     </span>
-                    <span className="text-sm text-muted-foreground font-medium">/ 100</span>
+                    <span className="text-sm text-muted-foreground">/ 100</span>
                   </div>
-                  <div className="h-3 w-full bg-muted rounded-full overflow-hidden shadow-inner ring-1 ring-border/50">
+                  <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                     <div
                       className={cn(
-                        "h-full rounded-full transition-all duration-700 animate-scale-in",
+                        "h-full transition-all duration-700",
                         conversation.leadScore >= 70
-                          ? "bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-500 shadow-lg shadow-emerald-500/30"
+                          ? "bg-success"
                           : conversation.leadScore >= 40
-                            ? "bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 shadow-lg shadow-amber-500/30"
-                            : "bg-gradient-to-r from-slate-400 via-slate-500 to-slate-400 shadow-lg shadow-slate-500/20"
+                            ? "bg-warning"
+                            : "bg-muted-foreground"
                       )}
                       style={{ width: `${conversation.leadScore}%` }}
                     />
                   </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
 
-          <Separator className="my-5" />
-
           {/* Timeline */}
-          <div className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-muted/20 to-transparent border border-border/50">
-            {/* Created */}
-            <div className="space-y-2">
-              <p className="text-label flex items-center gap-1.5">
-                <Clock className="h-3 w-3 text-primary" />
-                Créé le
-              </p>
-              <p className="text-body font-medium">
+          <div className="space-y-3 p-4 rounded-xl bg-muted/30 border border-border">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                <p className="text-label">Créé le</p>
+              </div>
+              <p className="text-body-strong">
                 {new Date(conversation.createdAt).toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "long",
@@ -556,13 +551,14 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
               </p>
             </div>
 
-            {/* Last message */}
-            <div className="space-y-2">
-              <p className="text-label flex items-center gap-1.5">
-                <MessageSquare className="h-3 w-3 text-primary" />
-                Dernier message
-              </p>
-              <p className="text-body font-medium">
+            <Separator />
+
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5">
+                <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+                <p className="text-label">Dernier message</p>
+              </div>
+              <p className="text-body-strong">
                 {new Date(conversation.lastMessageAt).toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "long",
@@ -572,14 +568,13 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
               </p>
             </div>
 
-            {/* Message count */}
-            <div className="space-y-2">
+            <Separator />
+
+            <div className="space-y-1.5">
               <p className="text-label">Total Messages</p>
-              <p className="text-stat-secondary text-primary">{messages.length}</p>
+              <p className="text-2xl font-bold text-primary">{messages.length}</p>
             </div>
           </div>
-
-          <Separator className="my-5" />
 
           {/* Internal Notes */}
           <InternalNotes conversationId={conversation.id} />

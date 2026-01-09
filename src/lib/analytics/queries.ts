@@ -401,8 +401,11 @@ export async function getAgentPerformance(
  * Get conversations grouped by intent
  */
 export async function getConversationsByIntent(
-  tenantId: string
+  tenantId: string,
+  days: number = 30
 ): Promise<{ intent: string; count: number }[]> {
+  const start = subDays(new Date(), days);
+
   // Get intents from messages
   const result = await db.message.groupBy({
     by: ["intent"],
@@ -410,6 +413,7 @@ export async function getConversationsByIntent(
       conversation: { tenantId },
       intent: { not: null },
       direction: "outbound",
+      createdAt: { gte: start },
     },
     _count: true,
     orderBy: { _count: { intent: "desc" } },

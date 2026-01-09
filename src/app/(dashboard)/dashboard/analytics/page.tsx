@@ -23,17 +23,30 @@ import {
   AgentLeaderboard,
 } from "@/components/dashboard/analytics";
 import { ExportButton } from "@/components/dashboard/analytics/ExportButton";
+import { PeriodSelector } from "@/components/dashboard/analytics/PeriodSelector";
 
-export default async function AnalyticsPage() {
+interface AnalyticsPageProps {
+  searchParams: Promise<{ period?: string }>;
+}
+
+export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps) {
   const { tenant } = await getCurrentTenant();
+  const params = await searchParams;
+  const period = parseInt(params.period || "30");
+
+  // Create date range for analytics queries
+  const now = new Date();
+  const start = new Date();
+  start.setDate(start.getDate() - period);
+  const dateRange = { start, end: now };
 
   // Fetch all analytics data in parallel
   const [metrics, conversationsTrend, intentDistribution, agentPerformance] =
     await Promise.all([
-      getDashboardMetrics(tenant.id),
-      getConversationsTrend(tenant.id, 30),
-      getConversationsByIntent(tenant.id),
-      getAgentPerformance(tenant.id),
+      getDashboardMetrics(tenant.id, dateRange),
+      getConversationsTrend(tenant.id, period),
+      getConversationsByIntent(tenant.id, period),
+      getAgentPerformance(tenant.id, dateRange),
     ]);
 
   // Calculate change percentages (mock for now - would need historical data)
@@ -46,16 +59,14 @@ export default async function AnalyticsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-bold">Analytics</h1>
         <div className="flex items-center gap-2 flex-wrap">
+          <PeriodSelector />
           <Link href="/dashboard/analytics/conversations">
             <Button variant="outline" size="sm">
               <BarChart3 className="h-4 w-4 mr-2" />
               Conversations
             </Button>
           </Link>
-          <ExportButton days={30} />
-          <span className="text-sm text-slate-500 hidden sm:inline">
-            Derniers 30 jours
-          </span>
+          <ExportButton days={period} />
         </div>
       </div>
 
