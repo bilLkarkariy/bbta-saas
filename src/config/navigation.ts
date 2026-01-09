@@ -11,6 +11,8 @@ import {
   BarChart2,
   LineChart,
   Settings,
+  Briefcase,
+  Clock,
 } from "lucide-react";
 
 export type NavItem = {
@@ -46,6 +48,8 @@ export const navigation: NavGroup[] = [
     title: "BUSINESS",
     items: [
       { title: "Booking", href: "/dashboard/booking", icon: Calendar },
+      { title: "Waiting List", href: "/dashboard/waiting-list", icon: Clock },
+      { title: "Resources", href: "/dashboard/resources", icon: Briefcase },
       { title: "Pipeline", href: "/dashboard/pipeline", icon: Target },
     ]
   },

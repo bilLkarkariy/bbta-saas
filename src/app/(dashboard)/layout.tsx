@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentTenant } from "@/lib/auth";
 import { SidebarWrapper } from "@/components/dashboard/sidebar/SidebarWrapper";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 
 
 export default async function DashboardLayout({
@@ -50,6 +51,10 @@ export default async function DashboardLayout({
             label: "Messages",
           }}
         />
+
+        {/* Dashboard Header with Notifications */}
+        <DashboardHeader />
+
         {/* Main content - add left padding on mobile for hamburger button */}
         <main className="flex-1 h-full overflow-y-auto overflow-x-hidden scrollbar-thin p-4 md:p-6 lg:p-8 pt-14 md:pt-6 lg:pt-8">
           {children}

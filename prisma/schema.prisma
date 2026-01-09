@@ -62,8 +62,13 @@ model Tenant {
   segments      Segment[]
   templates     MessageTemplate[]
   campaigns     Campaign[]
-  integrations  Integration[]
-  bookings      Booking[]
+  integrations    Integration[]
+  bookings        Booking[]
+  resources       Resource[]
+  availabilities  Availability[]
+  blockedSlots    BlockedSlot[]
+  waitingList     WaitingList[]
+  notifications   Notification[]
   analyticsDaily   AnalyticsDaily[]
   analyticsHourly  AnalyticsHourly[]
 
@@ -251,7 +256,80 @@ model AIUsage {
   @@index([month])
 }
 
+// ============ AVAILABILITY & SCHEDULING ============
+
+model Availability {
+  id           String   @id @default(cuid())
+  tenantId     String
+
+  dayOfWeek    Int      // 0=Sunday, 1=Monday, ..., 6=Saturday
+  startTime    String   // "09:00"
+  endTime      String   // "18:00"
+
+  resourceId   String?  // If specific to a resource, otherwise applies to all
+  resource     Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  isActive     Boolean  @default(true)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([resourceId])
+  @@index([dayOfWeek])
+}
+
+model BlockedSlot {
+  id           String   @id @default(cuid())
+  tenantId     String
+
+  date         String   // "YYYY-MM-DD"
+  startTime    String   // "14:00"
+  endTime      String   // "15:00"
+  reason       String?  // Optional reason for blocking
+
+  resourceId   String?  // If specific to a resource
+  resource     Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime @default(now())
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([resourceId])
+  @@index([date])
+}
+
 // ============ BOOKINGS ============
+
+model Resource {
+  id           String   @id @default(cuid())
+  tenantId     String
+
+  name         String   // e.g., "Marie (Coiffeuse)", "Salle 1"
+  type         String   // "staff", "room", "equipment"
+  color        String?  // Hex color for calendar display
+
+  // Availability
+  isActive     Boolean  @default(true)
+  workingHours Json?    // Optional: specific working hours for this resource
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bookings        Booking[]
+  availabilities  Availability[]
+  blockedSlots    BlockedSlot[]
+  waitingList     WaitingList[]
+
+  @@index([tenantId])
+  @@index([type])
+  @@index([isActive])
+}
 
 model Booking {
   id             String   @id @default(cuid())
@@ -276,12 +354,29 @@ model Booking {
   reminderSent   Boolean  @default(false)
   reminderSentAt DateTime?
 
+  // Payment tracking (Phase 4.1)
+  amount         Decimal?  @db.Decimal(10, 2) // Montant de la réservation
+  currency       String?   @default("EUR")     // Devise
+  paymentStatus  String    @default("unpaid")  // "unpaid", "deposit", "paid"
+  paymentMethod  String?                       // "cash", "card", "transfer", "online"
+  paidAt         DateTime?                     // Date du paiement
+
+  // Recurring bookings (Phase 4.3)
+  isRecurring    Boolean   @default(false)     // Est-ce une réservation récurrente
+  recurrenceRule String?                       // "weekly", "biweekly", "monthly"
+  recurrenceEndDate String?                    // Date de fin de récurrence (YYYY-MM-DD)
+  parentBookingId String?                      // ID du booking parent si c'est une occurrence
+  parentBooking  Booking?  @relation("RecurringBookings", fields: [parentBookingId], references: [id], onDelete: Cascade)
+  occurrences    Booking[] @relation("RecurringBookings")
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   // Relations
-  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversation   Conversation?  @relation(fields: [conversationId], references: [id])
+  resource       Resource?      @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+  notifications  Notification[]
 
   // Prevent double booking per resource (null resourceId = single-resource business)
   @@unique([tenantId, date, time, resourceId])
@@ -289,6 +384,46 @@ model Booking {
   @@index([date])
   @@index([status])
   @@index([customerPhone])
+  @@index([resourceId])
+}
+
+// ============ WAITING LIST ============
+
+model WaitingList {
+  id             String   @id @default(cuid())
+  tenantId       String
+
+  // Customer info
+  customerPhone  String
+  customerName   String?
+
+  // Desired booking details
+  service        String
+  desiredDate    String   // Format: YYYY-MM-DD
+  desiredTime    String?  // Format: HH:MM (optional - any time that day)
+  resourceId     String?  // Preferred resource
+
+  // Status lifecycle
+  status         String   @default("waiting") // "waiting", "notified", "converted", "cancelled"
+
+  // Notifications
+  notifiedAt     DateTime?
+  notificationCount Int   @default(0)
+
+  // Additional info
+  notes          String?
+  priority       Int      @default(0) // Higher = more priority
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  resource       Resource? @relation(fields: [resourceId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([desiredDate])
   @@index([resourceId])
 }
 
@@ -602,4 +737,36 @@ model ConversationNote {
 
   @@index([conversationId])
   @@index([userId])
+}
+
+// ============ NOTIFICATIONS ============
+
+model Notification {
+  id         String   @id @default(cuid())
+  tenantId   String
+
+  // Notification content
+  type       String   // "new_booking", "booking_cancelled", "booking_updated", "reminder_pending", "no_show"
+  title      String
+  message    String
+
+  // Linked resource
+  bookingId  String?
+  resourceType String? // "booking", "waiting_list", etc.
+  resourceId String?
+
+  // Status
+  isRead     Boolean  @default(false)
+  readAt     DateTime?
+
+  createdAt  DateTime @default(now())
+
+  // Relations
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  booking    Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, isRead])
+  @@index([createdAt])
+  @@index([bookingId])
 }
