@@ -243,11 +243,11 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 h-full overflow-hidden">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 h-full w-full" style={{ maxWidth: '100%' }}>
       {/* Messages Panel */}
-      <Card className="flex flex-col overflow-hidden animate-fade-up stagger-1 h-full card-premium shadow-layered">
+      <Card className="flex flex-col animate-fade-up stagger-1 h-full w-full card-premium shadow-layered overflow-hidden">
         {/* Conversation Header */}
-        <CardHeader className="border-b border-border/50 px-6 py-4 bg-gradient-to-b from-background/50 to-transparent backdrop-blur-sm">
+        <CardHeader className="border-b border-border/50 px-6 py-4 bg-gradient-to-b from-background/50 to-transparent backdrop-blur-sm shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 bg-muted/30 rounded-full px-3 py-1.5 border border-border/50">
@@ -289,7 +289,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
         </CardHeader>
 
         {/* Messages Area */}
-        <CardContent className="flex-1 overflow-y-auto p-6 scrollbar-thin space-y-6 bg-gradient-to-b from-muted/5 to-transparent">
+        <CardContent className="flex-1 overflow-y-auto overflow-x-hidden p-6 scrollbar-thin space-y-6 bg-gradient-to-b from-muted/5 to-transparent" style={{ minHeight: 0 }}>
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground animate-fade-in">
               <div className="relative mb-4">
@@ -322,7 +322,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
                   >
                     <p
                       className={cn(
-                        "text-sm leading-relaxed whitespace-pre-wrap",
+                        "text-sm leading-relaxed whitespace-pre-wrap break-words overflow-wrap-anywhere",
                         message.direction === "inbound" && "text-slate-700"
                       )}
                       dangerouslySetInnerHTML={{ __html: sanitizeContent(message.content) }}
@@ -383,7 +383,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
         </CardContent>
 
         {/* Reply Input */}
-        <div className="border-t border-border/50 bg-gradient-to-b from-transparent to-muted/5 px-6 py-5 backdrop-blur-sm">
+        <div className="border-t border-border/50 bg-gradient-to-b from-transparent to-muted/5 px-6 py-5 backdrop-blur-sm shrink-0">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -415,7 +415,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
       </Card>
 
       {/* Customer Info Sidebar */}
-      <Card className="overflow-hidden animate-fade-up stagger-2 hidden lg:block h-full card-premium shadow-layered">
+      <Card className="animate-fade-up stagger-2 hidden lg:flex lg:flex-col h-full w-full card-premium shadow-layered overflow-hidden">
         <CardHeader className="border-b border-border/50 px-6 py-4 bg-gradient-to-b from-primary/5 to-transparent">
           <CardTitle className="text-sm font-bold flex items-center gap-2 tracking-tight text-foreground">
             <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center ring-2 ring-primary/20">
@@ -424,7 +424,7 @@ export function ConversationDetail({ conversation }: ConversationDetailProps) {
             Informations client
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 space-y-6 overflow-y-auto scrollbar-thin max-h-[calc(100vh-16rem)]">
+        <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto overflow-x-hidden scrollbar-thin" style={{ minHeight: 0 }}>
           {/* Contact Info */}
           <div className="space-y-4 p-4 rounded-xl bg-gradient-to-br from-primary/5 to-primary/[0.02] border border-primary/10">
             {/* Phone */}

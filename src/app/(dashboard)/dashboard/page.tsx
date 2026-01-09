@@ -34,7 +34,7 @@ export default async function DashboardPage() {
   const responseRate = conversationCount > 0 ? 98.5 : 100;
 
   return (
-    <main className="space-y-6 relative min-h-full" aria-labelledby="dashboard-heading">
+    <main className="space-y-6 relative min-h-full w-full max-w-full" aria-labelledby="dashboard-heading">
       {/* Welcome Header */}
       <header className="flex flex-col md:flex-row items-center justify-between gap-4 relative z-10 animate-fade-up stagger-1">
         <div className="flex items-center gap-6">
@@ -74,9 +74,9 @@ export default async function DashboardPage() {
       </header>
 
       {/* KPI Cards */}
-      <section aria-labelledby="kpi-heading" className="relative z-10 animate-fade-up stagger-2">
+      <section aria-labelledby="kpi-heading" className="relative z-10 animate-fade-up stagger-2 w-full max-w-full">
         <h2 id="kpi-heading" className="sr-only">Indicateurs clés de performance</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-full">
           <StatsCard
             title="Messages"
             value={conversationCount.toLocaleString('fr-FR')}
@@ -109,22 +109,22 @@ export default async function DashboardPage() {
       </section>
 
       {/* Charts & Onboarding */}
-      <section aria-labelledby="activity-heading" className="relative z-10 animate-fade-up stagger-3">
+      <section aria-labelledby="activity-heading" className="relative z-10 animate-fade-up stagger-3 w-full max-w-full">
         <h2 id="activity-heading" className="sr-only">Activité et progression</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-full">
+          <div className="lg:col-span-2">
             <LazyChartWidget />
           </div>
-          <div className="lg:col-span-1 h-full">
+          <div className="lg:col-span-1">
             <OnboardingWidget faqCount={faqCount} />
           </div>
         </div>
       </section>
 
       {/* Recent Activity & Quick Actions */}
-      <section aria-labelledby="recent-heading" className="relative z-10 animate-fade-up stagger-4">
+      <section aria-labelledby="recent-heading" className="relative z-10 animate-fade-up stagger-4 w-full max-w-full">
         <h2 id="recent-heading" className="sr-only">Conversations récentes et actions</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-full">
           <div className="lg:col-span-2 h-full">
             <RecentConversations />
           </div>

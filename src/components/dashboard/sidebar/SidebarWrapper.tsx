@@ -82,7 +82,7 @@ export function SidebarWrapper(props: SidebarWrapperProps) {
       </Sheet>
 
       {/* Desktop sidebar - hidden on mobile */}
-      <div className="hidden md:block">
+      <div className="hidden md:flex md:h-full">
         <Sidebar {...sidebarProps} />
       </div>
     </>

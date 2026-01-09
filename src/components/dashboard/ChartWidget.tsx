@@ -43,8 +43,8 @@ export function ChartWidget() {
   const totalMessages = data.reduce((sum, d) => sum + d.value, 0);
 
   return (
-    <Card className="glass-card flex-1 min-h-[400px] flex flex-col relative overflow-hidden group border-none">
-      <CardHeader className="pb-2">
+    <Card className="glass-card w-full h-[400px] flex flex-col relative overflow-hidden group border-none">
+      <CardHeader className="pb-2 shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xs font-bold text-slate-400 tracking-widest uppercase">
             Activité Hebdomadaire
@@ -92,12 +92,8 @@ export function ChartWidget() {
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 min-h-0 relative z-10 pt-4">
-        <div
-          className="absolute inset-0 pb-6 pr-6 pl-2"
-          role="img"
-          aria-label="Graphique d'activité"
-        >
+      <CardContent className="flex-1 relative z-10 pt-4 overflow-hidden">
+        <div className="w-full h-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 20, right: 0, left: 0, bottom: 0 }}>
               <defs>

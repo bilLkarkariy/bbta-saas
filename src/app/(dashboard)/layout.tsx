@@ -25,13 +25,13 @@ export default async function DashboardLayout({
     : user.email.slice(0, 2).toUpperCase();
 
   return (
-    <div className="h-screen bg-gradient-to-br from-[#F8FAFC] to-[#E2E6EE] relative overflow-hidden grain">
+    <div className="h-screen bg-gradient-to-br from-[#F8FAFC] to-[#E2E6EE] relative grain w-full">
       {/* Ambient Lighting - Atmospheric haze */}
       <div className="absolute top-[20%] right-[-5%] w-[600px] h-[600px] bg-indigo-300/20 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px] pointer-events-none z-0" />
 
       {/* Main Layout Content - Floating Sidebar and Main Canvas */}
-      <div className="flex w-full h-full max-w-[1600px] mx-auto z-10 relative gap-4 md:gap-6 lg:gap-8 overflow-hidden">
+      <div className="flex w-full h-full max-w-[1600px] mx-auto z-10 relative gap-4 md:gap-6 lg:gap-8">
         <SidebarWrapper
           user={{
             name: user.name || "User",

@@ -28,16 +28,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={frFR}>
-      <html lang="fr" className="h-full">
+    <html lang="fr" >
+        <ClerkProvider localization={frFR}>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased h-full m-0 p-0`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased m-0 p-0`}
         >
           {children}
           <Toaster />
           <SpeedInsights />
         </body>
-      </html>
     </ClerkProvider>
+      </html>
   );
 }

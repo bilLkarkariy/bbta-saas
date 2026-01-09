@@ -281,6 +281,8 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   body {
@@ -288,6 +290,7 @@
     font-feature-settings: "ss01", "ss02", "cv01", "cv02";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 
   h1,

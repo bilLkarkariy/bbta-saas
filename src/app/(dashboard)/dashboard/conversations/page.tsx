@@ -54,7 +54,7 @@ export default async function ConversationsPage() {
   const canAssign = user.role === "OWNER" || user.role === "ADMIN";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full">
       <header className="space-y-2 animate-fade-up">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center ring-2 ring-primary/20">

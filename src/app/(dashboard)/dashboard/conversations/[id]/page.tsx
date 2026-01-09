@@ -55,29 +55,8 @@ export default async function ConversationPage({ params }: ConversationPageProps
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <header className="flex items-center gap-4 animate-fade-up stagger-1">
-        <Link href="/dashboard/conversations">
-          <Button variant="ghost" size="icon" className="shrink-0 hover:bg-primary/5 border border-border/50 shadow-sm">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <p className="text-label mb-1">Conversation</p>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {conversationData.customerName || conversationData.customerPhone}
-          </h1>
-          <p className="text-meta mt-1">
-            Messagerie WhatsApp en temps réel
-          </p>
-        </div>
-      </header>
-
-      {/* Conversation Detail - fixed height */}
-      <div className="h-[calc(100vh-16rem)] animate-fade-up stagger-2">
-        <ConversationDetail conversation={conversationData} />
-      </div>
+    <div className="space-y-6 w-full max-w-full">
+      <ConversationDetail conversation={conversationData} />
     </div>
   );
 }
