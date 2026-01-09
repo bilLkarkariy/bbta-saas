@@ -1,0 +1,45 @@
+name: Send Booking Reminders
+
+on:
+  schedule:
+    # Run daily at 6pm UTC (7pm Paris winter, 8pm Paris summer)
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Allow manual trigger for testing
+
+jobs:
+  send-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send booking reminders
+        run: |
+          echo "🔔 Triggering booking reminder endpoint..."
+
+          curl -X GET "${{ secrets.RAILWAY_APP_URL }}/api/cron/booking-reminders" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -f -s -S -o response.json
+
+          echo "📨 Response:"
+          cat response.json
+          echo ""
+
+          # Check if successful
+          if ! grep -q '"success":true' response.json; then
+            echo "❌ Reminder job failed!"
+            exit 1
+          fi
+
+          # Extract stats
+          SENT=$(cat response.json | grep -o '"sent":[0-9]*' | cut -d: -f2)
+          FAILED=$(cat response.json | grep -o '"failed":[0-9]*' | cut -d: -f2)
+          TOTAL=$(cat response.json | grep -o '"total":[0-9]*' | cut -d: -f2)
+
+          echo "✅ Reminders sent successfully"
+          echo "   Sent: $SENT"
+          echo "   Failed: $FAILED"
+          echo "   Total: $TOTAL"
+
+          # Fail if any failed
+          if [ "$FAILED" != "0" ]; then
+            echo "⚠️  Warning: $FAILED reminders failed to send"
+            exit 1
+          fi
