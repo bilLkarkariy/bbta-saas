@@ -5,6 +5,11 @@ import { promisify } from "util";
 const execAsync = promisify(exec);
 
 export async function GET(req: Request) {
+  // Keep this endpoint available for local/demo setup only.
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   try {
     // Run migrations
     console.log("Running migrations...");

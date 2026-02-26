@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import { db as prisma } from "@/lib/db";
 
 export async function POST() {
+  // Keep this endpoint available for local/demo setup only.
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
   try {
     console.log("🏪 Creating BBTA Nails demo tenant...");
 

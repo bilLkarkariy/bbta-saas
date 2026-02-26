@@ -4,8 +4,16 @@ import twilio from "twilio";
 const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 async function testSMS() {
-  const to = process.argv[2] || "+33600000002";
-  const from = process.env.TWILIO_PHONE_NUMBER || "+18777804236";
+  const to = process.argv[2] || process.env.TEST_SMS_TO;
+  const from = process.env.TWILIO_PHONE_NUMBER;
+
+  if (!to) {
+    throw new Error("Missing destination phone. Use: npx tsx scripts/test-sms.ts <E164_PHONE> or set TEST_SMS_TO");
+  }
+
+  if (!from) {
+    throw new Error("Missing TWILIO_PHONE_NUMBER environment variable");
+  }
   
   console.log(`📱 Sending SMS: ${from} → ${to}`);
   

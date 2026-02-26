@@ -1,5 +1,6 @@
 import type { FlowDefinition, ValidationResult } from "./types";
 import { db } from "@/lib/db";
+import { config } from "@/lib/env";
 import { Prisma } from "@prisma/client";
 import { sendWhatsAppMessage } from "@/lib/twilio";
 
@@ -244,13 +245,14 @@ Un conseiller vous contactera très prochainement. C'est bien noté ?`;
       });
 
       if (tenant?.ownerPhone && tenant?.whatsappNumber) {
+        const dashboardBaseUrl = config.app.url.replace(/\/$/, "");
         const leadMessage = `🎯 Nouveau lead capturé!\n\n` +
           `👤 Nom: ${data.name}\n` +
           `${data.email ? `📧 Email: ${data.email}\n` : ""}` +
           `${data.phone ? `📱 Téléphone: ${data.phone}\n` : ""}` +
           `🎯 Intérêt: ${data.interest}\n` +
           `🕐 Disponibilité: ${data.availability}\n\n` +
-          `Voir détails: https://your-app-domain.example/dashboard/conversations/${context.conversation.id}`;
+          `Voir détails: ${dashboardBaseUrl}/dashboard/conversations/${context.conversation.id}`;
 
         await sendWhatsAppMessage({
           to: tenant.ownerPhone,

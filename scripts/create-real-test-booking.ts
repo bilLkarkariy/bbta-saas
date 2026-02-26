@@ -26,8 +26,10 @@ async function createRealTestBooking() {
   // Tomorrow's date
   const tomorrow = format(addDays(new Date(), 1), "yyyy-MM-dd");
 
-  // Use REAL phone number that can receive WhatsApp
-  const realPhone = "+33600000002"; // Your Twilio phone number
+  const realPhone = process.argv[2] || process.env.REAL_TEST_PHONE;
+  if (!realPhone) {
+    throw new Error("Missing target phone. Use: npx tsx scripts/create-real-test-booking.ts <E164_PHONE> or set REAL_TEST_PHONE");
+  }
 
   console.log(`\n📅 Creating booking for: ${tomorrow}`);
   console.log(`📱 Sending reminder TO: ${realPhone}`);

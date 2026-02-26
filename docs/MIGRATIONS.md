@@ -1,246 +1,68 @@
-# Database Migrations Guide
+# Database Migrations
 
-This document covers database migration procedures for Lumelia SaaS.
+This project uses Prisma migrations for schema changes.
 
-## Overview
+## Development workflow
 
-We use Prisma Migrate for database schema management. All schema changes should be made through migrations.
-
-## Development Workflow
-
-### Creating a Migration
-
-1. Modify `prisma/schema.prisma`
+1. Update `prisma/schema.prisma`.
 2. Create migration:
-   ```bash
-   npx prisma migrate dev --name descriptive_name
-   ```
-3. Review generated SQL in `prisma/migrations/`
-4. Test migration locally
-5. Commit migration files
 
-### Migration Naming Convention
-
-Use descriptive, snake_case names:
-- `add_analytics_daily_model`
-- `add_user_role_field`
-- `update_conversation_assignment`
-
-## Production Deployment
-
-### Automatic (Vercel)
-
-Migrations run automatically during build:
 ```bash
-prisma generate && next build
+npx prisma migrate dev --name <descriptive_name>
 ```
 
-For production deploy, add to build:
-```bash
-prisma migrate deploy && prisma generate && next build
-```
+3. Review generated SQL in `prisma/migrations`.
+4. Test application paths impacted by the schema change.
+5. Commit both schema and migration files.
 
-### Manual
+## Production workflow
+
+Apply pending migrations in non-interactive mode:
 
 ```bash
-# Deploy all pending migrations
 npx prisma migrate deploy
 ```
 
-## Migration Checklist
+Recommended order during release:
 
-Before deploying a migration:
+1. Backup database (provider snapshot or SQL dump)
+2. Deploy code
+3. Run `prisma migrate deploy`
+4. Run smoke tests
 
-- [ ] Migration tested locally with seed data
-- [ ] Rollback procedure documented (if complex)
-- [ ] Breaking changes documented
-- [ ] Performance impact assessed (for large tables)
-- [ ] Backfill script prepared (if adding NOT NULL column)
+## Safe migration patterns
 
-## Rollback Procedures
+Preferred first:
 
-### Simple Rollback
+- Additive table/column changes
+- Nullable fields before backfill
+- New indexes for known query paths
 
-For additive changes (new tables, columns), you can:
-1. Deploy a new migration that undoes the change
-2. Or manually run SQL to revert
+For breaking changes, use multi-step rollout:
 
-### Complex Rollback
-
-For destructive changes, prepare rollback SQL beforehand:
-
-```sql
--- Example: Rollback add_user_role migration
-ALTER TABLE "User" DROP COLUMN "role";
-DROP TYPE "UserRole";
-```
-
-Store rollback scripts in `prisma/rollbacks/` directory.
-
-## Common Scenarios
-
-### Adding a New Model
-
-```prisma
-model NewModel {
-  id        String   @id @default(cuid())
-  tenantId  String
-  // fields...
-  
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  
-  @@index([tenantId])
-}
-```
-
-Migration: Safe, no data migration needed.
-
-### Adding a Column with Default
-
-```prisma
-model User {
-  // existing fields...
-  newField String @default("default_value")
-}
-```
-
-Migration: Safe, existing rows get default value.
-
-### Adding a NOT NULL Column
-
-Requires backfill:
-
-1. Add column as nullable:
-   ```prisma
-   newField String?
-   ```
-
-2. Deploy migration
-
-3. Backfill data:
-   ```sql
-   UPDATE "User" SET "newField" = 'value' WHERE "newField" IS NULL;
-   ```
-
-4. Change to NOT NULL:
-   ```prisma
-   newField String
-   ```
-
-5. Deploy second migration
-
-### Renaming a Column
-
-Prisma treats this as drop + add. Use `@map` instead:
-
-```prisma
-model User {
-  displayName String @map("old_column_name")
-}
-```
-
-### Dropping a Column
-
-1. Remove all code references first
-2. Deploy code change
-3. Create migration to drop column
-4. Deploy migration
-
-### Adding an Index
-
-```prisma
-model Conversation {
-  @@index([tenantId, status])
-}
-```
-
-Migration: Safe, but may lock table briefly on large datasets.
-Consider using `CREATE INDEX CONCURRENTLY` manually for production.
-
-## Preview Environments
-
-For preview deployments, consider:
-
-1. **Separate Database**: Each preview uses its own database
-   - Pro: Complete isolation
-   - Con: More databases to manage
-
-2. **Shared Database**: Previews share a staging database
-   - Pro: Simpler management
-   - Con: Migrations can conflict
-
-3. **Database Branching** (Neon): Branch from production
-   - Pro: Real data, isolated changes
-   - Con: Vendor-specific
+1. Add new nullable structure
+2. Backfill data
+3. Switch application reads/writes
+4. Remove old fields in later migration
 
 ## Troubleshooting
 
-### Migration Failed Mid-way
+Check migration state:
 
-1. Check migration status:
-   ```bash
-   npx prisma migrate status
-   ```
-
-2. If partially applied, manually fix:
-   ```bash
-   npx prisma migrate resolve --applied "migration_name"
-   # or
-   npx prisma migrate resolve --rolled-back "migration_name"
-   ```
-
-### Schema Drift
-
-If production schema doesn't match migrations:
-
-1. Generate current schema:
-   ```bash
-   npx prisma db pull
-   ```
-
-2. Compare with `schema.prisma`
-
-3. Create baseline or fix manually
-
-### Shadow Database Issues
-
-For development, Prisma needs a shadow database. If issues:
 ```bash
-# Use direct URL for migrations
-npx prisma migrate dev --skip-seed
+npx prisma migrate status
 ```
 
-## Emergency Procedures
+Resolve migration state only when you fully understand the DB state:
 
-### Hotfix Without Migration
+```bash
+npx prisma migrate resolve --applied <migration_name>
+npx prisma migrate resolve --rolled-back <migration_name>
+```
 
-For urgent production fixes that can't wait for migration:
+## Notes for this repository
 
-1. Apply SQL directly to production
-2. Update `schema.prisma` to match
-3. Create migration with `--create-only`:
-   ```bash
-   npx prisma migrate dev --create-only --name hotfix_description
-   ```
-4. Mark as applied:
-   ```bash
-   npx prisma migrate resolve --applied "hotfix_description"
-   ```
+- Keep migration names explicit and readable.
+- Test migration effects against tenant-scoped queries.
+- Do not run destructive reset commands in production.
 
-### Database Restore
-
-If migration causes data loss:
-
-1. Stop application
-2. Restore from backup
-3. Mark failed migration as rolled back
-4. Fix migration
-5. Redeploy
-
-## Best Practices
-
-1. **Small Migrations**: One logical change per migration
-2. **Test Locally**: Always test with representative data
-3. **Backup First**: For production, always backup before migrate
-4. **Off-Peak**: Run large migrations during low-traffic periods
-5. **Monitor**: Watch for locks and slow queries during migration

@@ -1,42 +1,86 @@
-Your URL: https://your-app-domain.example
+# BBTA SaaS
 
-  Final Steps (5 minutes):
+Production-oriented multi-tenant WhatsApp automation SaaS built with Next.js.
 
-  1. Run Database Migrations (Railway Dashboard):
+## What this project demonstrates
 
-  Open the Railway shell and run:
-  npx prisma migrate deploy
-  npx tsx prisma/seed-bbta.ts
+- Next.js App Router full-stack architecture
+- Multi-tenant data model with Prisma + PostgreSQL
+- Twilio WhatsApp webhook ingestion and outbound messaging
+- LLM integration (OpenRouter-compatible API) for intent routing and response generation
+- Structured conversation flows (booking and lead capture)
+- Real-time dashboard updates (SSE)
+- CI/CD-ready deployment setup for both Railway and Vercel
 
-  How to access Railway shell:
-  - https://railway.com/project/REDACTED_RAILWAY_PROJECT_ID
-  - Click "web" service → "Shell" tab
+## Architecture snapshot
 
-  2. Configure Twilio Webhook:
+- `src/app/api/webhooks/twilio` receives inbound WhatsApp messages
+- `src/lib/webhooks/twilio-processor.ts` handles idempotency, rate-limit, routing, persistence, and replies
+- `src/lib/ai/*` implements intent router, responder, and guided flows
+- `prisma/schema.prisma` defines tenant, conversation, message, booking, analytics, and integration models
+- `src/app/(dashboard)` contains authenticated product UI
 
-  Twilio Console: https://console.twilio.com/us1/develop/sms/settings/whatsapp-sandbox
+## Local setup
 
-  Set webhook URL:
-  https://your-app-domain.example/api/webhooks/twilio
-  Method: POST
+### 1. Install dependencies
 
-  3. Test with WhatsApp! 🎉
+```bash
+npm ci
+```
 
-  1. Join Twilio Sandbox:
-    - WhatsApp to: +1 415 523 8886
-    - Send: join <your-code>
-  2. Send test message:
-  Quels sont vos horaires ?
-  3. Get AI response! ✅
+### 2. Configure environment
 
-  ---
-  What's Deployed:
+```bash
+cp .env.example .env.local
+```
 
-  ✅ Next.js app
-  ✅ PostgreSQL database
-  ✅ All environment variables
-  ✅ Twilio webhook endpoint
-  ✅ Clerk authentication
-  ✅ OpenRouter AI
+Fill `.env.local` with your own values.
 
-  Permanent URL: https://your-app-domain.example
+### 3. Generate Prisma client and apply migrations
+
+```bash
+npm run db:generate
+npx prisma migrate deploy
+```
+
+### 4. Start development server
+
+```bash
+npm run dev
+```
+
+## Environment variables
+
+Use `.env.example` as the canonical template. Never commit real credentials.
+
+Core required variables:
+
+- `DATABASE_URL`
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+
+Production integrations typically also need:
+
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_NUMBER`
+- `OPENROUTER_API_KEY`
+- `CRON_SECRET`
+
+## Security notes
+
+- Twilio signature bypass is development-only (`TWILIO_SKIP_SIGNATURE_VERIFICATION` is ignored in production).
+- Demo admin routes are disabled in production.
+- Cron endpoint is bearer-protected and fails closed when `CRON_SECRET` is missing.
+- `.env*` files and `.railway/` are ignored by git.
+
+## Known limitations (intentional for this portfolio stage)
+
+- Idempotency/rate-limiting currently use in-memory maps and should be moved to Redis for multi-instance production.
+- Some flows and copy are currently French-first because of the target demo domain.
+
+## Deployment
+
+See:
+
+- `docs/DEPLOYMENT.md`
+- `docs/MIGRATIONS.md`
+

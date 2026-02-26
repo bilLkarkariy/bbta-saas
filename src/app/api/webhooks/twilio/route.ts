@@ -18,8 +18,9 @@ export async function POST(req: Request) {
       params[key] = value.toString();
     });
 
-    // Verify Twilio signature (skip only if explicitly disabled for local dev)
-    const skipSignatureVerification = process.env.TWILIO_SKIP_SIGNATURE_VERIFICATION === "true";
+    // Signature bypass is allowed only outside production for local development.
+    const isProduction = process.env.NODE_ENV === "production";
+    const skipSignatureVerification = !isProduction && process.env.TWILIO_SKIP_SIGNATURE_VERIFICATION === "true";
     if (!skipSignatureVerification) {
       const signature = req.headers.get("x-twilio-signature");
       const url = process.env.TWILIO_WEBHOOK_URL || process.env.NEXT_PUBLIC_APP_URL + "/api/webhooks/twilio";
