@@ -2,6 +2,14 @@
 
 Production-oriented multi-tenant WhatsApp automation SaaS built with Next.js.
 
+## Demo Video (French)
+
+<video src="./public/demo-fr.mp4" controls width="960">
+  Your browser does not support the video tag.
+</video>
+
+[Open the demo video directly](./public/demo-fr.mp4)
+
 ## What this project demonstrates
 
 - Next.js App Router full-stack architecture
@@ -83,4 +91,3 @@ See:
 
 - `docs/DEPLOYMENT.md`
 - `docs/MIGRATIONS.md`
-
