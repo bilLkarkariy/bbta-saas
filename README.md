@@ -73,12 +73,12 @@ Production integrations typically also need:
 - `OPENROUTER_API_KEY`
 - `CRON_SECRET`
 
-## Security notes
+## Production safeguards
 
-- Twilio signature bypass is development-only (`TWILIO_SKIP_SIGNATURE_VERIFICATION` is ignored in production).
-- Demo admin routes are disabled in production.
-- Cron endpoint is bearer-protected and fails closed when `CRON_SECRET` is missing.
-- `.env*` files and `.railway/` are ignored by git.
+- Webhook authentication and request validation are enforced in production.
+- Internal demo/setup endpoints are not exposed in production.
+- Scheduled jobs are protected by server-side authorization.
+- Secrets and local infrastructure files are excluded from version control.
 
 ## Known limitations (intentional for this portfolio stage)
 
